@@ -50,4 +50,28 @@ void main() {
     rows = await repository.watchAll().first;
     expect(rows, isEmpty);
   });
+
+  test('email import deduplicates by message id', () async {
+    const messageId = 'gmail_msg_123';
+    final draft = ExpenseDraft(
+      title: 'Bank · May 26',
+      amount: 99.99,
+      currencyCode: 'DOP',
+      spentAt: DateTime(2026, 5, 26),
+      source: 'email',
+      externalId: messageId,
+    );
+
+    final first = await repository.createFromEmailIfNew(draft, messageId);
+    final second = await repository.createFromEmailIfNew(draft, messageId);
+
+    expect(first, isNotNull);
+    expect(second, isNull);
+    expect(await repository.isEmailImported(messageId), isTrue);
+
+    final rows = await repository.watchAll().first;
+    expect(rows.length, 1);
+    expect(rows.first.currencyCode, 'DOP');
+    expect(rows.first.isFromEmail, isTrue);
+  });
 }

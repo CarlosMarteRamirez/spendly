@@ -37,7 +37,6 @@ void main() {
     await tester.tap(find.byKey(const Key('expense_form_save')));
     await tester.pump();
 
-    expect(find.text('Title is required.'), findsOneWidget);
     expect(find.text('Enter a valid amount greater than 0.'), findsOneWidget);
   });
 

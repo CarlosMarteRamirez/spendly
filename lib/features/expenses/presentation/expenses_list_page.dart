@@ -6,6 +6,7 @@ import 'package:app_for_finance/features/expenses/presentation/expense_form_page
 import 'package:app_for_finance/features/expenses/presentation/widgets/empty_expenses.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/expense_tile.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/filter_section.dart';
+import 'package:app_for_finance/features/email_import/presentation/email_import_page.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/summary_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,19 @@ class ExpensesListPage extends ConsumerWidget {
     final filters = ref.watch(filtersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My expenses')),
+      appBar: AppBar(
+        title: const Text('My expenses'),
+        actions: [
+          IconButton(
+            tooltip: 'Bank email import',
+            icon: const Icon(Icons.mark_email_read_outlined),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const EmailImportPage()),
+                ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(context),
         icon: const Icon(Icons.add_rounded),

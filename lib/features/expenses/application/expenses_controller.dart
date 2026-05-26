@@ -4,7 +4,10 @@ import 'package:app_for_finance/features/expenses/domain/expense.dart';
 import 'package:app_for_finance/features/expenses/domain/expense_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const availableCurrencies = ['USD', 'EUR', 'MXN'];
+const availableCurrencies = ['USD', 'EUR', 'MXN', 'DOP'];
+
+/// Default currency for bank email imports (Dominican peso).
+const defaultImportCurrency = 'DOP';
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();
@@ -30,11 +33,11 @@ final filteredExpensesProvider = Provider<AsyncValue<List<Expense>>>((ref) {
   return expenses.whenData((list) {
     return list
         .where((expense) {
+          final query = filters.searchQuery.toLowerCase();
           final matchesQuery =
               filters.searchQuery.isEmpty ||
-              expense.title.toLowerCase().contains(
-                filters.searchQuery.toLowerCase(),
-              );
+              expense.title.toLowerCase().contains(query) ||
+              (expense.notes?.toLowerCase().contains(query) ?? false);
           final matchesCurrency =
               filters.currencyCode == null ||
               expense.currencyCode == filters.currencyCode;

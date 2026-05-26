@@ -1,3 +1,5 @@
+import 'package:app_for_finance/core/utils/currency_labels.dart';
+import 'package:app_for_finance/core/utils/expense_display.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/core/utils/formatters.dart';
@@ -81,15 +83,9 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                         controller: _titleController,
                         textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
-                          labelText: 'Title',
+                          labelText: 'Title (optional)',
                           prefixIcon: Icon(Icons.label_outline_rounded),
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Title is required.';
-                          }
-                          return null;
-                        },
                       ),
                       const SizedBox(height: AppSpacing.md),
                       TextFormField(
@@ -145,7 +141,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                             availableCurrencies.map((code) {
                               final selected = _currencyCode == code;
                               return FilterChip(
-                                label: Text(code),
+                                label: Text(currencyChipLabel(code)),
                                 selected: selected,
                                 showCheckmark: false,
                                 onSelected:
@@ -271,8 +267,9 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     final repository = ref.read(expenseRepositoryProvider);
+    final title = _titleController.text.trim();
     final draft = ExpenseDraft(
-      title: _titleController.text.trim(),
+      title: title.isEmpty ? kUntitledExpenseLabel : title,
       amount: double.parse(_amountController.text.trim()),
       currencyCode: _currencyCode,
       spentAt: _spentAt,

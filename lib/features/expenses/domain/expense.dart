@@ -8,6 +8,8 @@ class Expense {
     required this.createdAt,
     required this.updatedAt,
     this.notes,
+    this.source = 'manual',
+    this.externalId,
   });
 
   final int id;
@@ -18,4 +20,8 @@ class Expense {
   final DateTime spentAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String source;
+  final String? externalId;
+
+  bool get isFromEmail => source == 'email';
 }

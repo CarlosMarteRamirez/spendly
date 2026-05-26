@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
@@ -16,14 +17,89 @@ class ExpensesTable extends Table {
   DateTimeColumn get spentAt => dateTime()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
+  TextColumn get source =>
+      text().withDefault(const Constant('manual'))();
+  TextColumn get externalId => text().nullable()();
 }
 
-@DriftDatabase(tables: [ExpensesTable])
+/// Single-row table for bank email import settings (id = 1).
+class EmailImportSettingsTable extends Table {
+  IntColumn get id => integer()();
+  TextColumn get bankSendersJson => text()();
+  TextColumn get defaultCurrency =>
+      text().withDefault(const Constant('DOP'))();
+  BoolColumn get gmailConnected =>
+      boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastSyncAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Tracks Gmail message IDs already imported (deduplication).
+class ImportedEmailsTable extends Table {
+  TextColumn get messageId => text()();
+  IntColumn get expenseId => integer()();
+  DateTimeColumn get importedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {messageId};
+}
+
+@DriftDatabase(tables: [
+  ExpensesTable,
+  EmailImportSettingsTable,
+  ImportedEmailsTable,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase({QueryExecutor? executor}) : super(executor ?? _openConnection());
 
+  static const emailImportSettingsRowId = 1;
+
+  static const defaultBankSenderFilters = [
+    'qik.do',
+    'notificaciones@qik.do',
+    'bhd.com.do',
+    'popular.com.do',
+    'banreservas.com',
+    'scotiabank.com',
+    'apap.com.do',
+    'promerica.com.do',
+  ];
+
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.addColumn(expensesTable, expensesTable.source);
+        await m.addColumn(expensesTable, expensesTable.externalId);
+        await m.createTable(importedEmailsTable);
+      }
+      if (from < 3) {
+        await m.createTable(emailImportSettingsTable);
+        await into(emailImportSettingsTable).insert(
+          EmailImportSettingsTableCompanion.insert(
+            id: const Value(emailImportSettingsRowId),
+            bankSendersJson: jsonEncode(defaultBankSenderFilters),
+          ),
+        );
+      }
+    },
+    beforeOpen: (details) async {
+      if (details.wasCreated) {
+        await into(emailImportSettingsTable).insert(
+          EmailImportSettingsTableCompanion.insert(
+            id: const Value(emailImportSettingsRowId),
+            bankSendersJson: jsonEncode(defaultBankSenderFilters),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+      }
+    },
+  );
 
   Stream<List<ExpensesTableData>> watchExpenses() {
     final query = select(expensesTable)..orderBy([
@@ -31,6 +107,27 @@ class AppDatabase extends _$AppDatabase {
       (t) => OrderingTerm.desc(t.id),
     ]);
     return query.watch();
+  }
+
+  Future<bool> isEmailImported(String messageId) async {
+    final row =
+        await (select(importedEmailsTable)
+          ..where((t) => t.messageId.equals(messageId))).getSingleOrNull();
+    return row != null;
+  }
+
+  Future<void> markEmailImported({
+    required String messageId,
+    required int expenseId,
+  }) {
+    return into(importedEmailsTable).insert(
+      ImportedEmailsTableCompanion.insert(
+        messageId: messageId,
+        expenseId: expenseId,
+        importedAt: DateTime.now(),
+      ),
+      mode: InsertMode.insertOrIgnore,
+    );
   }
 }
 

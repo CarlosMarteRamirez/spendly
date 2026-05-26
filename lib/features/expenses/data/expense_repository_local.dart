@@ -22,8 +22,35 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
             spentAt: draft.spentAt,
             createdAt: now,
             updatedAt: now,
+            source: Value(draft.source),
+            externalId: Value(draft.externalId),
           ),
         );
+  }
+
+  @override
+  Future<int?> createFromEmailIfNew(ExpenseDraft draft, String messageId) async {
+    if (await _db.isEmailImported(messageId)) {
+      return null;
+    }
+    final expenseId = await create(
+      ExpenseDraft(
+        title: draft.title,
+        amount: draft.amount,
+        currencyCode: draft.currencyCode,
+        spentAt: draft.spentAt,
+        notes: draft.notes,
+        source: 'email',
+        externalId: messageId,
+      ),
+    );
+    await _db.markEmailImported(messageId: messageId, expenseId: expenseId);
+    return expenseId;
+  }
+
+  @override
+  Future<bool> isEmailImported(String messageId) {
+    return _db.isEmailImported(messageId);
   }
 
   @override
@@ -41,6 +68,8 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
         notes: Value(draft.notes),
         spentAt: Value(draft.spentAt),
         updatedAt: Value(DateTime.now()),
+        source: Value(draft.source),
+        externalId: Value(draft.externalId),
       ),
     );
   }
@@ -59,6 +88,8 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
               spentAt: row.spentAt,
               createdAt: row.createdAt,
               updatedAt: row.updatedAt,
+              source: row.source,
+              externalId: row.externalId,
             ),
           )
           .toList(growable: false),

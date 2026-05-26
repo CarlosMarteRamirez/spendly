@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/utils/currency_labels.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/core/utils/formatters.dart';
@@ -58,7 +59,7 @@ class FilterSection extends ConsumerWidget {
                   (code) => Padding(
                     padding: const EdgeInsets.only(left: AppSpacing.sm),
                     child: _CurrencyChip(
-                      label: code,
+                      label: currencyChipLabel(code),
                       selected: filters.currencyCode == code,
                       onTap:
                           () => ref

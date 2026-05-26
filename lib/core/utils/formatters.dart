@@ -26,6 +26,10 @@ String formatExpenseDate(DateTime date) {
 }
 
 String formatMoney(double amount, String currencyCode) {
+  if (currencyCode == 'DOP') {
+    final formatted = NumberFormat('#,##0.00', 'en_US').format(amount);
+    return 'RD\$$formatted';
+  }
   return NumberFormat.currency(
     locale: 'en_US',
     name: currencyCode,

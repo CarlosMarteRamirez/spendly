@@ -1,5 +1,7 @@
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
+import 'package:app_for_finance/core/utils/currency_labels.dart';
+import 'package:app_for_finance/core/utils/expense_display.dart';
 import 'package:app_for_finance/core/utils/formatters.dart';
 import 'package:app_for_finance/features/expenses/domain/expense.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +18,10 @@ class ExpenseTile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
+  String get _displayTitle => expenseDisplayTitle(expense);
+
   String get _initial {
-    final trimmed = expense.title.trim();
+    final trimmed = _displayTitle.trim();
     if (trimmed.isEmpty) return '?';
     return trimmed[0].toUpperCase();
   }
@@ -63,7 +67,7 @@ class ExpenseTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          expense.title,
+                          _displayTitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(
@@ -94,7 +98,7 @@ class ExpenseTile extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        expense.currencyCode,
+                        currencyChipLabel(expense.currencyCode),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),

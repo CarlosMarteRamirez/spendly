@@ -7,6 +7,8 @@ class ExpenseDraft {
     required this.currencyCode,
     required this.spentAt,
     this.notes,
+    this.source = 'manual',
+    this.externalId,
   });
 
   final String title;
@@ -14,6 +16,8 @@ class ExpenseDraft {
   final String currencyCode;
   final DateTime spentAt;
   final String? notes;
+  final String source;
+  final String? externalId;
 }
 
 abstract class ExpenseRepository {
@@ -21,4 +25,6 @@ abstract class ExpenseRepository {
   Future<int> create(ExpenseDraft draft);
   Future<void> update(int id, ExpenseDraft draft);
   Future<void> delete(int id);
+  Future<bool> isEmailImported(String messageId);
+  Future<int?> createFromEmailIfNew(ExpenseDraft draft, String messageId);
 }
