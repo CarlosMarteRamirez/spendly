@@ -1,6 +1,5 @@
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
-import 'package:app_for_finance/core/widgets/spendly_logo.dart';
 import 'package:flutter/material.dart';
 
 class EmptyExpenses extends StatelessWidget {
