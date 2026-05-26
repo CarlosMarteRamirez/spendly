@@ -52,7 +52,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Editar gasto' : 'Nuevo gasto'),
+        title: Text(_isEditing ? 'Edit expense' : 'New expense'),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
@@ -71,7 +71,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Detalle',
+                        'Details',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -81,12 +81,12 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                         controller: _titleController,
                         textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
-                          labelText: 'Titulo',
+                          labelText: 'Title',
                           prefixIcon: Icon(Icons.label_outline_rounded),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'El titulo es obligatorio.';
+                            return 'Title is required.';
                           }
                           return null;
                         },
@@ -109,13 +109,13 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                           color: AppColors.textPrimary,
                         ),
                         decoration: const InputDecoration(
-                          labelText: 'Monto',
+                          labelText: 'Amount',
                           prefixIcon: Icon(Icons.attach_money_rounded),
                         ),
                         validator: (value) {
                           final parsed = double.tryParse(value?.trim() ?? '');
                           if (parsed == null || parsed <= 0) {
-                            return 'Ingresa un monto valido mayor a 0.';
+                            return 'Enter a valid amount greater than 0.';
                           }
                           return null;
                         },
@@ -132,7 +132,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Moneda',
+                        'Currency',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -188,7 +188,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                       color: AppColors.primary,
                     ),
                   ),
-                  title: const Text('Fecha y hora'),
+                  title: const Text('Date and time'),
                   subtitle: Text(formatExpenseDate(_spentAt)),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: _pickDateTime,
@@ -200,11 +200,14 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   child: TextFormField(
                     controller: _notesController,
-                    maxLines: 3,
+                    maxLines: 2,
                     decoration: const InputDecoration(
-                      labelText: 'Notas (opcional)',
-                      prefixIcon: Icon(Icons.notes_rounded),
+                      labelText: 'Notes (optional)',
                       alignLabelWithHint: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 25,
+                        vertical: 8,
+                      ),
                     ),
                   ),
                 ),
@@ -216,9 +219,24 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                   key: const Key('expense_form_save'),
                   onPressed: _submit,
                   icon: const Icon(Icons.save_rounded),
-                  label: Text(_isEditing ? 'Guardar cambios' : 'Guardar gasto'),
+                  label: Text(_isEditing ? 'Save changes' : 'Save expense'),
                 ),
               ),
+              if (_isEditing) ...[
+                const SizedBox(height: AppSpacing.sm),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: _deleteExpense,
+                    icon: const Icon(Icons.delete_rounded),
+                    label: const Text('Delete expense'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.red.shade700,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -268,6 +286,48 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     } else {
       await repository.create(draft);
     }
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _deleteExpense() async {
+    final expense = widget.expense;
+    if (expense == null) return;
+
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Delete expense'),
+            content: const Text('This action cannot be undone.'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(60, 35),
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                ),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(60, 35),
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                ),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+    );
+
+    if (shouldDelete != true) return;
+
+    await ref.read(expenseRepositoryProvider).delete(expense.id);
     if (mounted) {
       Navigator.of(context).pop();
     }

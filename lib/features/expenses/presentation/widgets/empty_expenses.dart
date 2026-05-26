@@ -1,5 +1,6 @@
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
+import 'package:app_for_finance/core/widgets/spendly_logo.dart';
 import 'package:flutter/material.dart';
 
 class EmptyExpenses extends StatelessWidget {
@@ -13,21 +14,9 @@ class EmptyExpenses extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.receipt_long_rounded,
-                size: 56,
-                color: AppColors.primary,
-              ),
-            ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'Sin gastos aun',
+              'No expenses yet',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -35,7 +24,7 @@ class EmptyExpenses extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Agrega tu primer gasto con el boton Nuevo',
+              'Add your first expense with the New button',
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,

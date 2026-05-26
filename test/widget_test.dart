@@ -14,10 +14,10 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Mis gastos'), findsOneWidget);
-    expect(find.text('Nuevo'), findsOneWidget);
-    expect(find.text('Movimientos'), findsOneWidget);
-    expect(find.text('Buscar por titulo'), findsOneWidget);
+    expect(find.text('My expenses'), findsOneWidget);
+    expect(find.text('New'), findsOneWidget);
+    expect(find.text('Transactions'), findsOneWidget);
+    expect(find.text('Search by title'), findsOneWidget);
   });
 
   testWidgets('expense form validates required fields', (
@@ -37,8 +37,8 @@ void main() {
     await tester.tap(find.byKey(const Key('expense_form_save')));
     await tester.pump();
 
-    expect(find.text('El titulo es obligatorio.'), findsOneWidget);
-    expect(find.text('Ingresa un monto valido mayor a 0.'), findsOneWidget);
+    expect(find.text('Title is required.'), findsOneWidget);
+    expect(find.text('Enter a valid amount greater than 0.'), findsOneWidget);
   });
 
   testWidgets('filter section does not overflow on narrow screens', (
@@ -66,7 +66,7 @@ void main() {
     await tester.pump();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Desde'), findsNothing);
-    expect(find.textContaining('may'), findsWidgets);
+    expect(find.text('From'), findsNothing);
+    expect(find.textContaining('May'), findsWidgets);
   });
 }

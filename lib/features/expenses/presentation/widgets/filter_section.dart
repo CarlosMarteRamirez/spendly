@@ -34,7 +34,7 @@ class FilterSection extends ConsumerWidget {
                 Icons.search_rounded,
                 color: AppColors.textSecondary,
               ),
-              hintText: 'Buscar por titulo',
+              hintText: 'Search by title',
             ),
             onChanged:
                 (value) => ref
@@ -47,7 +47,7 @@ class FilterSection extends ConsumerWidget {
             child: Row(
               children: [
                 _CurrencyChip(
-                  label: 'Todas',
+                  label: 'All',
                   selected: filters.currencyCode == null,
                   onTap:
                       () => ref
@@ -72,7 +72,7 @@ class FilterSection extends ConsumerWidget {
                   icon: Icons.calendar_today_rounded,
                   label:
                       filters.from == null
-                          ? 'Desde'
+                          ? 'From'
                           : formatShortDate(filters.from!),
                   selected: filters.from != null,
                   onTap: () => _pickDate(context, ref, isFrom: true),
@@ -82,7 +82,7 @@ class FilterSection extends ConsumerWidget {
                   icon: Icons.event_rounded,
                   label:
                       filters.to == null
-                          ? 'Hasta'
+                          ? 'To'
                           : formatShortDate(filters.to!),
                   selected: filters.to != null,
                   onTap: () => _pickDate(context, ref, isFrom: false),
@@ -91,7 +91,7 @@ class FilterSection extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.sm),
                   ActionChip(
                     avatar: const Icon(Icons.filter_alt_off, size: 18),
-                    label: const Text('Limpiar'),
+                    label: const Text('Clear'),
                     onPressed:
                         () =>
                             ref.read(filtersProvider.notifier).state =

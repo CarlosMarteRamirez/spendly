@@ -4,7 +4,7 @@ import 'package:app_for_finance/features/expenses/domain/expense.dart';
 import 'package:app_for_finance/features/expenses/domain/expense_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const availableCurrencies = ['USD', 'EUR', 'MXN', 'COP', 'PEN'];
+const availableCurrencies = ['USD', 'EUR', 'MXN'];
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();

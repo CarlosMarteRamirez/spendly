@@ -33,7 +33,7 @@ class SummaryHero extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Resumen',
+                    'Summary',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontWeight: FontWeight.w500,
@@ -41,7 +41,7 @@ class SummaryHero extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Este mes',
+                    'This month',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Colors.white.withValues(alpha: 0.75),
                     ),
@@ -59,7 +59,7 @@ class SummaryHero extends StatelessWidget {
                   Row(
                     children: [
                       _StatPill(
-                        label: 'Hoy',
+                        label: 'Today',
                         value: formatMoneyCompact(data.todayTotal),
                       ),
                       const SizedBox(width: AppSpacing.sm),
@@ -68,7 +68,7 @@ class SummaryHero extends StatelessWidget {
                         value: formatMoneyCompact(data.grandTotal),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      _StatPill(label: 'Gastos', value: '${data.itemCount}'),
+                      _StatPill(label: 'Items', value: '${data.itemCount}'),
                     ],
                   ),
                 ],

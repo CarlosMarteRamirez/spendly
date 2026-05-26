@@ -20,11 +20,11 @@ class ExpensesListPage extends ConsumerWidget {
     final filters = ref.watch(filtersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis gastos')),
+      appBar: AppBar(title: const Text('My expenses')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(context),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Nuevo'),
+        label: const Text('New'),
       ),
       body: SafeArea(
         child: Column(
@@ -40,7 +40,7 @@ class ExpensesListPage extends ConsumerWidget {
                 AppSpacing.sm,
               ),
               child: Text(
-                'Movimientos',
+                'Transactions',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -85,9 +85,11 @@ class ExpensesListPage extends ConsumerWidget {
                                   confirmDismiss:
                                       (_) => _confirmDelete(context),
                                   onDismissed: (_) async {
-                                    await ref
-                                        .read(expenseRepositoryProvider)
-                                        .delete(expense.id);
+                                    await _deleteExpense(
+                                      context,
+                                      ref,
+                                      expense,
+                                    );
                                   },
                                   child: ExpenseTile(
                                     expense: expense,
@@ -99,9 +101,12 @@ class ExpensesListPage extends ConsumerWidget {
                                     onDelete: () async {
                                       if (await _confirmDelete(context) ??
                                           false) {
-                                        await ref
-                                            .read(expenseRepositoryProvider)
-                                            .delete(expense.id);
+                                        if (!context.mounted) return;
+                                        await _deleteExpense(
+                                          context,
+                                          ref,
+                                          expense,
+                                        );
                                       }
                                     },
                                   ),
@@ -129,22 +134,41 @@ class ExpensesListPage extends ConsumerWidget {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Eliminar gasto'),
-            content: const Text('Esta accion no se puede deshacer.'),
+            title: const Text('Delete expense'),
+            content: const Text('This action cannot be undone.'),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancelar'),
+                child: const Text('Cancel'),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Eliminar'),
+                child: const Text('Delete'),
               ),
             ],
           ),
     );
+  }
+
+  Future<void> _deleteExpense(
+    BuildContext context,
+    WidgetRef ref,
+    Expense expense,
+  ) async {
+    await ref.read(expenseRepositoryProvider).delete(expense.id);
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text('"${expense.title}" deleted'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+    }
   }
 }

@@ -1,22 +1,22 @@
 import 'package:intl/intl.dart';
 
-const _monthsEs = [
-  'ene',
-  'feb',
-  'mar',
-  'abr',
-  'may',
-  'jun',
-  'jul',
-  'ago',
-  'sep',
-  'oct',
-  'nov',
-  'dic',
+const _monthsEn = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 String formatShortDate(DateTime date) {
-  return '${date.day} ${_monthsEs[date.month - 1]}';
+  return '${_monthsEn[date.month - 1]} ${date.day}';
 }
 
 String formatExpenseDate(DateTime date) {
