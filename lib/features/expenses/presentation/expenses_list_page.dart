@@ -149,10 +149,18 @@ class ExpensesListPage extends ConsumerWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(60, 35),
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                ),
                 child: const Text('Cancel'),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(60, 35),
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                ),
                 child: const Text('Delete'),
               ),
             ],

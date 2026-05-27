@@ -380,7 +380,9 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     setState(() => _loadingRate = false);
     if (rate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not fetch exchange rate right now.')),
+        const SnackBar(
+          content: Text('Could not fetch exchange rate right now.'),
+        ),
       );
       return;
     }
@@ -405,7 +407,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                 onPressed: () => Navigator.of(context).pop(false),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(60, 35),
-                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 ),
                 child: const Text('Cancel'),
               ),
@@ -413,7 +415,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                 onPressed: () => Navigator.of(context).pop(true),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(60, 35),
-                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 ),
                 child: const Text('Delete'),
               ),

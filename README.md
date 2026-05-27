@@ -25,3 +25,35 @@ magick -background "#0D9488" assets/icon/spendly_logo.svg -flatten -resize 1024x
 magick assets/icon/app_icon.png -background "#0D9488" -alpha remove -alpha off assets/icon/app_icon.png
 dart run flutter_launcher_icons
 ```
+
+## Run On Mac (iOS)
+
+Before running the app from macOS, complete this setup:
+
+1. Install requirements:
+   - Flutter SDK
+   - Xcode (and Xcode Command Line Tools)
+   - CocoaPods (`sudo gem install cocoapods` or Homebrew setup)
+2. From project root, install dependencies:
+   ```bash
+   flutter pub get
+   ```
+3. Install iOS pods:
+   ```bash
+   cd ios && pod install && cd ..
+   ```
+4. If using Gmail sync on iOS, configure OAuth first:
+   - Add `GIDClientID` and `CFBundleURLTypes` in `ios/Runner/Info.plist`
+   - Keep OAuth plist files local (do not commit secrets)
+5. Verify connected devices:
+   ```bash
+   flutter devices
+   ```
+6. Run:
+   ```bash
+   flutter run -d "iPhone_14"
+   ```
+   For a physical iPhone, use:
+   ```bash
+   flutter run --release -d "<Your iPhone Name>"
+   ```
