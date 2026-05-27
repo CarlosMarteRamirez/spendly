@@ -1,4 +1,4 @@
-# app_for_finance
+# Spendly
 
 A new Flutter project.
 

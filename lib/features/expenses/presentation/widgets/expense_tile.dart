@@ -43,7 +43,6 @@ class ExpenseTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               border: Border.all(color: AppColors.border),
-              boxShadow: AppColors.cardShadow,
             ),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
