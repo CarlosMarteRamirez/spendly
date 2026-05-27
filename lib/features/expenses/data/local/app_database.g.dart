@@ -114,6 +114,18 @@ class $ExpensesTableTable extends ExpensesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _usdConversionRateMeta = const VerificationMeta(
+    'usdConversionRate',
+  );
+  @override
+  late final GeneratedColumn<double> usdConversionRate =
+      GeneratedColumn<double>(
+        'usd_conversion_rate',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -126,6 +138,7 @@ class $ExpensesTableTable extends ExpensesTable
     updatedAt,
     source,
     externalId,
+    usdConversionRate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -211,6 +224,15 @@ class $ExpensesTableTable extends ExpensesTable
         externalId.isAcceptableOrUnknown(data['external_id']!, _externalIdMeta),
       );
     }
+    if (data.containsKey('usd_conversion_rate')) {
+      context.handle(
+        _usdConversionRateMeta,
+        usdConversionRate.isAcceptableOrUnknown(
+          data['usd_conversion_rate']!,
+          _usdConversionRateMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -268,6 +290,10 @@ class $ExpensesTableTable extends ExpensesTable
         DriftSqlType.string,
         data['${effectivePrefix}external_id'],
       ),
+      usdConversionRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}usd_conversion_rate'],
+      ),
     );
   }
 
@@ -289,6 +315,7 @@ class ExpensesTableData extends DataClass
   final DateTime updatedAt;
   final String source;
   final String? externalId;
+  final double? usdConversionRate;
   const ExpensesTableData({
     required this.id,
     required this.title,
@@ -300,6 +327,7 @@ class ExpensesTableData extends DataClass
     required this.updatedAt,
     required this.source,
     this.externalId,
+    this.usdConversionRate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -317,6 +345,9 @@ class ExpensesTableData extends DataClass
     map['source'] = Variable<String>(source);
     if (!nullToAbsent || externalId != null) {
       map['external_id'] = Variable<String>(externalId);
+    }
+    if (!nullToAbsent || usdConversionRate != null) {
+      map['usd_conversion_rate'] = Variable<double>(usdConversionRate);
     }
     return map;
   }
@@ -337,6 +368,10 @@ class ExpensesTableData extends DataClass
           externalId == null && nullToAbsent
               ? const Value.absent()
               : Value(externalId),
+      usdConversionRate:
+          usdConversionRate == null && nullToAbsent
+              ? const Value.absent()
+              : Value(usdConversionRate),
     );
   }
 
@@ -356,6 +391,9 @@ class ExpensesTableData extends DataClass
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       source: serializer.fromJson<String>(json['source']),
       externalId: serializer.fromJson<String?>(json['externalId']),
+      usdConversionRate: serializer.fromJson<double?>(
+        json['usdConversionRate'],
+      ),
     );
   }
   @override
@@ -372,6 +410,7 @@ class ExpensesTableData extends DataClass
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'source': serializer.toJson<String>(source),
       'externalId': serializer.toJson<String?>(externalId),
+      'usdConversionRate': serializer.toJson<double?>(usdConversionRate),
     };
   }
 
@@ -386,6 +425,7 @@ class ExpensesTableData extends DataClass
     DateTime? updatedAt,
     String? source,
     Value<String?> externalId = const Value.absent(),
+    Value<double?> usdConversionRate = const Value.absent(),
   }) => ExpensesTableData(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -397,6 +437,10 @@ class ExpensesTableData extends DataClass
     updatedAt: updatedAt ?? this.updatedAt,
     source: source ?? this.source,
     externalId: externalId.present ? externalId.value : this.externalId,
+    usdConversionRate:
+        usdConversionRate.present
+            ? usdConversionRate.value
+            : this.usdConversionRate,
   );
   ExpensesTableData copyWithCompanion(ExpensesTableCompanion data) {
     return ExpensesTableData(
@@ -414,6 +458,10 @@ class ExpensesTableData extends DataClass
       source: data.source.present ? data.source.value : this.source,
       externalId:
           data.externalId.present ? data.externalId.value : this.externalId,
+      usdConversionRate:
+          data.usdConversionRate.present
+              ? data.usdConversionRate.value
+              : this.usdConversionRate,
     );
   }
 
@@ -429,7 +477,8 @@ class ExpensesTableData extends DataClass
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('source: $source, ')
-          ..write('externalId: $externalId')
+          ..write('externalId: $externalId, ')
+          ..write('usdConversionRate: $usdConversionRate')
           ..write(')'))
         .toString();
   }
@@ -446,6 +495,7 @@ class ExpensesTableData extends DataClass
     updatedAt,
     source,
     externalId,
+    usdConversionRate,
   );
   @override
   bool operator ==(Object other) =>
@@ -460,7 +510,8 @@ class ExpensesTableData extends DataClass
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.source == this.source &&
-          other.externalId == this.externalId);
+          other.externalId == this.externalId &&
+          other.usdConversionRate == this.usdConversionRate);
 }
 
 class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
@@ -474,6 +525,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
   final Value<DateTime> updatedAt;
   final Value<String> source;
   final Value<String?> externalId;
+  final Value<double?> usdConversionRate;
   const ExpensesTableCompanion({
     this.id = const Value.absent(),
     this.title = const Value.absent(),
@@ -485,6 +537,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
     this.updatedAt = const Value.absent(),
     this.source = const Value.absent(),
     this.externalId = const Value.absent(),
+    this.usdConversionRate = const Value.absent(),
   });
   ExpensesTableCompanion.insert({
     this.id = const Value.absent(),
@@ -497,6 +550,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
     required DateTime updatedAt,
     this.source = const Value.absent(),
     this.externalId = const Value.absent(),
+    this.usdConversionRate = const Value.absent(),
   }) : title = Value(title),
        amount = Value(amount),
        currencyCode = Value(currencyCode),
@@ -514,6 +568,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
     Expression<DateTime>? updatedAt,
     Expression<String>? source,
     Expression<String>? externalId,
+    Expression<double>? usdConversionRate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -526,6 +581,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (source != null) 'source': source,
       if (externalId != null) 'external_id': externalId,
+      if (usdConversionRate != null) 'usd_conversion_rate': usdConversionRate,
     });
   }
 
@@ -540,6 +596,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
     Value<DateTime>? updatedAt,
     Value<String>? source,
     Value<String?>? externalId,
+    Value<double?>? usdConversionRate,
   }) {
     return ExpensesTableCompanion(
       id: id ?? this.id,
@@ -552,6 +609,7 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
       updatedAt: updatedAt ?? this.updatedAt,
       source: source ?? this.source,
       externalId: externalId ?? this.externalId,
+      usdConversionRate: usdConversionRate ?? this.usdConversionRate,
     );
   }
 
@@ -588,6 +646,9 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
     if (externalId.present) {
       map['external_id'] = Variable<String>(externalId.value);
     }
+    if (usdConversionRate.present) {
+      map['usd_conversion_rate'] = Variable<double>(usdConversionRate.value);
+    }
     return map;
   }
 
@@ -603,7 +664,8 @@ class ExpensesTableCompanion extends UpdateCompanion<ExpensesTableData> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('source: $source, ')
-          ..write('externalId: $externalId')
+          ..write('externalId: $externalId, ')
+          ..write('usdConversionRate: $usdConversionRate')
           ..write(')'))
         .toString();
   }
@@ -1310,6 +1372,7 @@ typedef $$ExpensesTableTableCreateCompanionBuilder =
       required DateTime updatedAt,
       Value<String> source,
       Value<String?> externalId,
+      Value<double?> usdConversionRate,
     });
 typedef $$ExpensesTableTableUpdateCompanionBuilder =
     ExpensesTableCompanion Function({
@@ -1323,6 +1386,7 @@ typedef $$ExpensesTableTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<String> source,
       Value<String?> externalId,
+      Value<double?> usdConversionRate,
     });
 
 class $$ExpensesTableTableFilterComposer
@@ -1381,6 +1445,11 @@ class $$ExpensesTableTableFilterComposer
 
   ColumnFilters<String> get externalId => $composableBuilder(
     column: $table.externalId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get usdConversionRate => $composableBuilder(
+    column: $table.usdConversionRate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1443,6 +1512,11 @@ class $$ExpensesTableTableOrderingComposer
     column: $table.externalId,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get usdConversionRate => $composableBuilder(
+    column: $table.usdConversionRate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ExpensesTableTableAnnotationComposer
@@ -1485,6 +1559,11 @@ class $$ExpensesTableTableAnnotationComposer
 
   GeneratedColumn<String> get externalId => $composableBuilder(
     column: $table.externalId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get usdConversionRate => $composableBuilder(
+    column: $table.usdConversionRate,
     builder: (column) => column,
   );
 }
@@ -1538,6 +1617,7 @@ class $$ExpensesTableTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> source = const Value.absent(),
                 Value<String?> externalId = const Value.absent(),
+                Value<double?> usdConversionRate = const Value.absent(),
               }) => ExpensesTableCompanion(
                 id: id,
                 title: title,
@@ -1549,6 +1629,7 @@ class $$ExpensesTableTableTableManager
                 updatedAt: updatedAt,
                 source: source,
                 externalId: externalId,
+                usdConversionRate: usdConversionRate,
               ),
           createCompanionCallback:
               ({
@@ -1562,6 +1643,7 @@ class $$ExpensesTableTableTableManager
                 required DateTime updatedAt,
                 Value<String> source = const Value.absent(),
                 Value<String?> externalId = const Value.absent(),
+                Value<double?> usdConversionRate = const Value.absent(),
               }) => ExpensesTableCompanion.insert(
                 id: id,
                 title: title,
@@ -1573,6 +1655,7 @@ class $$ExpensesTableTableTableManager
                 updatedAt: updatedAt,
                 source: source,
                 externalId: externalId,
+                usdConversionRate: usdConversionRate,
               ),
           withReferenceMapper:
               (p0) =>

@@ -24,6 +24,7 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
             updatedAt: now,
             source: Value(draft.source),
             externalId: Value(draft.externalId),
+            usdConversionRate: Value(draft.usdConversionRate),
           ),
         );
   }
@@ -42,6 +43,7 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
         notes: draft.notes,
         source: 'email',
         externalId: messageId,
+        usdConversionRate: draft.usdConversionRate,
       ),
     );
     await _db.markEmailImported(messageId: messageId, expenseId: expenseId);
@@ -70,6 +72,7 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
         updatedAt: Value(DateTime.now()),
         source: Value(draft.source),
         externalId: Value(draft.externalId),
+        usdConversionRate: Value(draft.usdConversionRate),
       ),
     );
   }
@@ -90,6 +93,7 @@ class ExpenseRepositoryLocal implements ExpenseRepository {
               updatedAt: row.updatedAt,
               source: row.source,
               externalId: row.externalId,
+              usdConversionRate: row.usdConversionRate,
             ),
           )
           .toList(growable: false),

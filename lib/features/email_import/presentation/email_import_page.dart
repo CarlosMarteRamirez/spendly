@@ -199,7 +199,7 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
     setState(() => _status = null);
     try {
       final gmail = ref.read(gmailServiceProvider);
-      await gmail.signIn();
+      await gmail.ensureSignedIn();
       await ref.read(emailImportSettingsStoreProvider).setGmailConnected(true);
       final result =
           await ref.read(emailImportServiceProvider).importFromGmail();

@@ -27,6 +27,20 @@ class GmailService {
     }
   }
 
+  Future<void> ensureSignedIn() async {
+    final account = _signIn.currentUser ?? await _signIn.signInSilently();
+    if (account == null) {
+      await signIn();
+      return;
+    }
+    final granted = await _signIn.requestScopes(
+      const [gmail.GmailApi.gmailReadonlyScope],
+    );
+    if (!granted) {
+      throw StateError('Gmail permission was not granted.');
+    }
+  }
+
   Future<void> signOut() async {
     await _signIn.signOut();
   }

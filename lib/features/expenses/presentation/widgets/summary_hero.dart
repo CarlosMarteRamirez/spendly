@@ -41,14 +41,14 @@ class SummaryHero extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'This month',
+                    'This month (USD)',
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Colors.white.withValues(alpha: 0.75),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    formatMoneyCompact(data.monthTotal),
+                    formatMoney(data.monthTotal, 'USD'),
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -60,12 +60,12 @@ class SummaryHero extends StatelessWidget {
                     children: [
                       _StatPill(
                         label: 'Today',
-                        value: formatMoneyCompact(data.todayTotal),
+                        value: formatMoney(data.todayTotal, 'USD'),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       _StatPill(
                         label: 'Total',
-                        value: formatMoneyCompact(data.grandTotal),
+                        value: formatMoney(data.grandTotal, 'USD'),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       _StatPill(label: 'Items', value: '${data.itemCount}'),

@@ -20,6 +20,7 @@ class ExpensesTable extends Table {
   TextColumn get source =>
       text().withDefault(const Constant('manual'))();
   TextColumn get externalId => text().nullable()();
+  RealColumn get usdConversionRate => real().nullable()();
 }
 
 /// Single-row table for bank email import settings (id = 1).
@@ -68,7 +69,7 @@ class AppDatabase extends _$AppDatabase {
   ];
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -85,6 +86,12 @@ class AppDatabase extends _$AppDatabase {
             id: const Value(emailImportSettingsRowId),
             bankSendersJson: jsonEncode(defaultBankSenderFilters),
           ),
+        );
+      }
+      if (from < 4) {
+        await m.addColumn(expensesTable, expensesTable.usdConversionRate);
+        await customStatement(
+          "UPDATE expenses_table SET usd_conversion_rate = 1.0 WHERE currency_code = 'USD'",
         );
       }
     },

@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/services/usd_exchange_rate_service.dart';
 import 'package:app_for_finance/features/email_import/data/email_import_settings_store.dart';
 import 'package:app_for_finance/features/email_import/data/gmail_service.dart';
 import 'package:app_for_finance/features/email_import/domain/bank_email_parser.dart';
@@ -22,13 +23,16 @@ class EmailImportService {
   EmailImportService({
     required ExpenseRepository expenses,
     required EmailImportSettingsStore settingsStore,
+    required UsdExchangeRateService exchangeRates,
     GmailService? gmail,
   }) : _expenses = expenses,
        _settingsStore = settingsStore,
+       _exchangeRates = exchangeRates,
        _gmail = gmail ?? GmailService();
 
   final ExpenseRepository _expenses;
   final EmailImportSettingsStore _settingsStore;
+  final UsdExchangeRateService _exchangeRates;
   final GmailService _gmail;
 
   Future<EmailImportResult> importFromGmail() async {
@@ -105,6 +109,10 @@ class EmailImportService {
           title: parsed.title,
           amount: parsed.amount,
           currencyCode: parsed.currencyCode,
+          usdConversionRate: await _exchangeRates.getUsdToCurrencyRate(
+            currencyCode: parsed.currencyCode,
+            date: parsed.spentAt,
+          ),
           spentAt: parsed.spentAt,
           notes: 'Imported from bank email',
           source: 'email',

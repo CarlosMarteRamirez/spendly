@@ -9,6 +9,7 @@ class ExpenseDraft {
     this.notes,
     this.source = 'manual',
     this.externalId,
+    this.usdConversionRate,
   });
 
   final String title;
@@ -18,6 +19,7 @@ class ExpenseDraft {
   final String? notes;
   final String source;
   final String? externalId;
+  final double? usdConversionRate;
 }
 
 abstract class ExpenseRepository {

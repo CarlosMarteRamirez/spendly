@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/services/usd_exchange_rate_service.dart';
 import 'package:app_for_finance/features/expenses/data/expense_repository_local.dart';
 import 'package:app_for_finance/features/expenses/data/local/app_database.dart';
 import 'package:app_for_finance/features/expenses/domain/expense.dart';
@@ -17,6 +18,10 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 
 final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   return ExpenseRepositoryLocal(ref.watch(appDatabaseProvider));
+});
+
+final usdExchangeRateServiceProvider = Provider<UsdExchangeRateService>((ref) {
+  return const UsdExchangeRateService();
 });
 
 final filtersProvider = StateProvider<ExpenseFilters>((ref) {
@@ -111,13 +116,14 @@ class ExpenseSummary {
     var monthTotal = 0.0;
     var grandTotal = 0.0;
     for (final expense in expenses) {
-      grandTotal += expense.amount;
+      final usdAmount = expense.amountInUsd;
+      grandTotal += usdAmount;
       final spentDate = _normalizeDate(expense.spentAt);
       if (spentDate == today) {
-        todayTotal += expense.amount;
+        todayTotal += usdAmount;
       }
       if (!spentDate.isBefore(monthStart)) {
-        monthTotal += expense.amount;
+        monthTotal += usdAmount;
       }
     }
 

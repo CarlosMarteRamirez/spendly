@@ -34,7 +34,8 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('expense_form_save')));
+    final formState = tester.state<FormState>(find.byType(Form));
+    expect(formState.validate(), isFalse);
     await tester.pump();
 
     expect(find.text('Enter a valid amount greater than 0.'), findsOneWidget);

@@ -40,97 +40,91 @@ class ExpensesListPage extends ConsumerWidget {
         label: const Text('New'),
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SummaryHero(summary: summary),
-            FilterSection(filters: filters),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.sm,
-                AppSpacing.lg,
-                AppSpacing.sm,
-              ),
-              child: Text(
-                'Transactions',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+        child: filtered.when(
+          data: (expenses) {
+            if (expenses.isEmpty) {
+              return ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  SummaryHero(summary: summary),
+                  FilterSection(filters: filters),
+                  const EmptyExpenses(),
+                  const SizedBox(height: 88),
+                ],
+              );
+            }
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(child: SummaryHero(summary: summary)),
+                SliverToBoxAdapter(child: FilterSection(filters: filters)),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                    ),
+                    child: Text(
+                      'Transactions',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: filtered.when(
-                data:
-                    (expenses) =>
-                        expenses.isEmpty
-                            ? const EmptyExpenses()
-                            : ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(
-                                AppSpacing.lg,
-                                0,
-                                AppSpacing.lg,
-                                88,
-                              ),
-                              itemCount: expenses.length,
-                              itemBuilder: (context, index) {
-                                final expense = expenses[index];
-                                return Dismissible(
-                                  key: ValueKey(expense.id),
-                                  direction: DismissDirection.endToStart,
-                                  background: Container(
-                                    alignment: Alignment.centerRight,
-                                    padding: const EdgeInsets.only(
-                                      right: AppSpacing.lg,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red.shade400,
-                                      borderRadius: BorderRadius.circular(
-                                        AppSpacing.radiusMd,
-                                      ),
-                                    ),
-                                    child: const Icon(
-                                      Icons.delete_rounded,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  confirmDismiss:
-                                      (_) => _confirmDelete(context),
-                                  onDismissed: (_) async {
-                                    await _deleteExpense(
-                                      context,
-                                      ref,
-                                      expense,
-                                    );
-                                  },
-                                  child: ExpenseTile(
-                                    expense: expense,
-                                    onEdit:
-                                        () => _openForm(
-                                          context,
-                                          expense: expense,
-                                        ),
-                                    onDelete: () async {
-                                      if (await _confirmDelete(context) ??
-                                          false) {
-                                        if (!context.mounted) return;
-                                        await _deleteExpense(
-                                          context,
-                                          ref,
-                                          expense,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    0,
+                    AppSpacing.lg,
+                    88,
+                  ),
+                  sliver: SliverList.builder(
+                    itemCount: expenses.length,
+                    itemBuilder: (context, index) {
+                      final expense = expenses[index];
+                      return Dismissible(
+                        key: ValueKey(expense.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: AppSpacing.lg),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusMd,
                             ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('Error: $err')),
-              ),
-            ),
-          ],
+                          ),
+                          child: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.white,
+                          ),
+                        ),
+                        confirmDismiss: (_) => _confirmDelete(context),
+                        onDismissed: (_) async {
+                          await _deleteExpense(context, ref, expense);
+                        },
+                        child: ExpenseTile(
+                          expense: expense,
+                          onEdit: () => _openForm(context, expense: expense),
+                          onDelete: () async {
+                            if (await _confirmDelete(context) ?? false) {
+                              if (!context.mounted) return;
+                              await _deleteExpense(context, ref, expense);
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, _) => Center(child: Text('Error: $err')),
         ),
       ),
     );

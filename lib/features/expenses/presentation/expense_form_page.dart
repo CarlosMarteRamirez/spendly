@@ -23,9 +23,11 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
   late final TextEditingController _amountController;
+  late final TextEditingController _usdRateController;
   late final TextEditingController _notesController;
   late DateTime _spentAt;
   late String _currencyCode;
+  bool _loadingRate = false;
 
   bool get _isEditing => widget.expense != null;
 
@@ -37,15 +39,27 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     _amountController = TextEditingController(
       text: expense != null ? expense.amount.toStringAsFixed(2) : '',
     );
+    _usdRateController = TextEditingController(
+      text:
+          expense == null
+              ? ''
+              : expense.currencyCode == 'USD'
+              ? '1.0000'
+              : (expense.usdConversionRate?.toStringAsFixed(4) ?? ''),
+    );
     _notesController = TextEditingController(text: expense?.notes ?? '');
     _spentAt = expense?.spentAt ?? DateTime.now();
     _currencyCode = expense?.currencyCode ?? availableCurrencies.first;
+    if (_currencyCode == 'USD' && _usdRateController.text.isEmpty) {
+      _usdRateController.text = '1.0000';
+    }
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _amountController.dispose();
+    _usdRateController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -144,8 +158,17 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                                 label: Text(currencyChipLabel(code)),
                                 selected: selected,
                                 showCheckmark: false,
-                                onSelected:
-                                    (_) => setState(() => _currencyCode = code),
+                                onSelected: (_) {
+                                  setState(() {
+                                    _currencyCode = code;
+                                    if (_currencyCode == 'USD') {
+                                      _usdRateController.text = '1.0000';
+                                    } else if (_isEditing &&
+                                        widget.expense?.currencyCode != code) {
+                                      _usdRateController.clear();
+                                    }
+                                  });
+                                },
                                 selectedColor: AppColors.primary.withValues(
                                   alpha: 0.15,
                                 ),
@@ -161,6 +184,61 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                                 ),
                               );
                             }).toList(),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      TextFormField(
+                        controller: _usdRateController,
+                        readOnly: _currencyCode == 'USD',
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,6}'),
+                          ),
+                        ],
+                        decoration: InputDecoration(
+                          labelText:
+                              _currencyCode == 'USD'
+                                  ? 'USD conversion rate (fixed)'
+                                  : 'USD conversion rate',
+                          hintText:
+                              _currencyCode == 'USD'
+                                  ? '1.0000'
+                                  : '1 USD = ? $_currencyCode',
+                          prefixIcon: const Icon(
+                            Icons.currency_exchange_rounded,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (_currencyCode == 'USD') return null;
+                          final parsed = double.tryParse(value?.trim() ?? '');
+                          if (parsed == null || parsed <= 0) {
+                            return 'Enter a valid USD conversion rate.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: OutlinedButton.icon(
+                          onPressed:
+                              (_currencyCode == 'USD' || _loadingRate)
+                                  ? null
+                                  : _loadSuggestedRate,
+                          icon:
+                              _loadingRate
+                                  ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Icon(Icons.cloud_download_outlined),
+                          label: const Text('Fetch historical USD rate'),
+                        ),
                       ),
                     ],
                   ),
@@ -266,12 +344,17 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    final usdRate =
+        _currencyCode == 'USD'
+            ? 1.0
+            : double.tryParse(_usdRateController.text.trim());
     final repository = ref.read(expenseRepositoryProvider);
     final title = _titleController.text.trim();
     final draft = ExpenseDraft(
       title: title.isEmpty ? kUntitledExpenseLabel : title,
       amount: double.parse(_amountController.text.trim()),
       currencyCode: _currencyCode,
+      usdConversionRate: usdRate,
       spentAt: _spentAt,
       notes:
           _notesController.text.trim().isEmpty
@@ -286,6 +369,22 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     if (mounted) {
       Navigator.of(context).pop();
     }
+  }
+
+  Future<void> _loadSuggestedRate() async {
+    setState(() => _loadingRate = true);
+    final rate = await ref
+        .read(usdExchangeRateServiceProvider)
+        .getUsdToCurrencyRate(currencyCode: _currencyCode, date: _spentAt);
+    if (!mounted) return;
+    setState(() => _loadingRate = false);
+    if (rate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not fetch exchange rate right now.')),
+      );
+      return;
+    }
+    setState(() => _usdRateController.text = rate.toStringAsFixed(4));
   }
 
   Future<void> _deleteExpense() async {

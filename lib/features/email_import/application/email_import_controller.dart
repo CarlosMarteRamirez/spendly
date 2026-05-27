@@ -16,6 +16,7 @@ final emailImportServiceProvider = Provider<EmailImportService>((ref) {
   return EmailImportService(
     expenses: ref.watch(expenseRepositoryProvider),
     settingsStore: ref.watch(emailImportSettingsStoreProvider),
+    exchangeRates: ref.watch(usdExchangeRateServiceProvider),
     gmail: ref.watch(gmailServiceProvider),
   );
 });
