@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0D9488" />
+
+    <title data-i18n="meta.title">Spendly — Track every expense, in any currency.</title>
+    <meta
+      name="description"
+      data-i18n="meta.description"
+      content="Spendly is a Flutter expense tracker for iOS with automatic bank email import and historical USD conversion."
+    />
+
+    <link rel="icon" type="image/png" href="assets/app-icon.png" />
+    <link rel="apple-touch-icon" href="assets/app-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="aurora" aria-hidden="true"></div>
+
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="#top" class="brand" aria-label="Spendly">
+          <img src="assets/app-icon.png" alt="" />
+          <span>Spendly</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#features" data-i18n="nav.features">Features</a>
+          <a href="#how" data-i18n="nav.how">How it works</a>
+          <a href="#shots" data-i18n="nav.screenshots">Screenshots</a>
+          <a href="#tech" data-i18n="nav.tech">Tech</a>
+        </nav>
+        <button
+          id="langToggle"
+          class="lang-toggle"
+          aria-label="Switch language"
+          type="button"
+        >
+          <span class="dot" aria-hidden="true"></span>
+          <span id="langLabel">ES</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="container">
+          <div class="hero-grid">
+            <div class="reveal">
+              <span class="eyebrow" data-i18n="hero.eyebrow">iOS · Flutter</span>
+              <h1 class="hero-title">
+                <span data-i18n="hero.title1">Track every expense,</span>
+                <span class="gradient-text" data-i18n="hero.title2"
+                  >in any currency.</span
+                >
+              </h1>
+              <p class="hero-lead" data-i18n="hero.lead">
+                Spendly is a personal expense tracker for iOS. It reads bank
+                notification emails from Gmail, normalizes everything to USD
+                using the historical rate for the day of the transaction, and
+                keeps your data 100% local.
+              </p>
+              <div class="hero-actions">
+                <a
+                  class="btn btn-primary"
+                  href="https://github.com/CarlosMarteRamirez/spendly"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.55 0-.27-.01-1-.02-1.96-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.98 0 1.98.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.77.12 3.06.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.26 5.69.41.36.77 1.06.77 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.66.8.55C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"
+                    />
+                  </svg>
+                  <span data-i18n="hero.ctaPrimary">View on GitHub</span>
+                </a>
+                <a class="btn btn-secondary" href="#features">
+                  <span data-i18n="hero.ctaSecondary">See features</span>
+                </a>
+              </div>
+              <div class="hero-meta">
+                <span>
+                  <span class="dot"></span>
+                  <span data-i18n="hero.meta1">iOS · Flutter · Riverpod</span>
+                </span>
+                <span>
+                  <span class="dot"></span>
+                  <span data-i18n="hero.meta2">Local-first (Drift / SQLite)</span>
+                </span>
+                <span>
+                  <span class="dot"></span>
+                  <span data-i18n="hero.meta3">Gmail + Currency API</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="phone-wrap reveal delay-1" aria-hidden="true">
+              <div class="phone">
+                <div class="phone-screen">
+                  <div class="mock-screen">
+                    <div class="mock-title" data-i18n="mock.heading">
+                      My expenses
+                    </div>
+                    <div class="mock-summary">
+                      <div class="lbl">Summary</div>
+                      <div class="lbl-sub" data-i18n="mock.month">
+                        This month (USD)
+                      </div>
+                      <div class="amount">USD 81.34</div>
+                      <div class="mock-pills">
+                        <div class="mock-pill">
+                          <div class="pill-lbl" data-i18n="mock.today">
+                            Today
+                          </div>
+                          <div class="pill-val">USD 2.48</div>
+                        </div>
+                        <div class="mock-pill">
+                          <div class="pill-lbl" data-i18n="mock.total">
+                            Total
+                          </div>
+                          <div class="pill-val">USD 91.35</div>
+                        </div>
+                        <div class="mock-pill">
+                          <div class="pill-lbl" data-i18n="mock.items">
+                            Items
+                          </div>
+                          <div class="pill-val">18</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mock-search">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="m21 21-4.3-4.3" />
+                      </svg>
+                      <span data-i18n="mock.search">Search by title</span>
+                    </div>
+                    <div class="mock-row">
+                      <div class="avatar">U</div>
+                      <div class="info">
+                        <div class="ttl">UBER RIDES-W*UBER RID...</div>
+                        <div class="sub">May 27, 11:07</div>
+                      </div>
+                      <div class="amt">RD$71.58</div>
+                    </div>
+                    <div class="mock-row">
+                      <div class="avatar">P</div>
+                      <div class="info">
+                        <div class="ttl">PedidosYa</div>
+                        <div class="sub">May 26, 19:42</div>
+                      </div>
+                      <div class="amt">RD$1,250.00</div>
+                    </div>
+                    <div class="mock-row">
+                      <div class="avatar">N</div>
+                      <div class="info">
+                        <div class="ttl">Netflix</div>
+                        <div class="sub">May 25, 08:00</div>
+                      </div>
+                      <div class="amt">USD 15.49</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="features" class="features">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="eyebrow" data-i18n="features.eyebrow">Features</span>
+            <h2 class="section-title" data-i18n="features.title">
+              Everything you need to understand your spending.
+            </h2>
+            <p class="section-lead" data-i18n="features.lead">
+              Designed to be opened in seconds, log a charge in two taps, and
+              answer "how much did I really spend this month" without doing
+              math.
+            </p>
+          </div>
+
+          <div class="features-grid">
+            <article class="feature reveal">
+              <div class="feature-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+              </div>
+              <h3 data-i18n="features.f1.title">Manual expenses, any currency</h3>
+              <p data-i18n="features.f1.body">
+                Log a charge with title, amount, date and notes. Supports USD,
+                EUR, MXN and DOP (RD$) out of the box.
+              </p>
+            </article>
+
+            <article class="feature reveal delay-1">
+              <div class="feature-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 4h16v16H4z" />
+                  <path d="m4 4 8 8 8-8" />
+                </svg>
+              </div>
+              <h3 data-i18n="features.f2.title">Automatic Gmail import</h3>
+              <p data-i18n="features.f2.body">
+                Connects to Gmail with read-only scope and parses notifications
+                from Qik, BHD, Popular, Banreservas, Scotiabank, APAP and
+                Promerica. Deduplicates by Gmail message id.
+              </p>
+            </article>
+
+            <article class="feature reveal delay-2">
+              <div class="feature-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 12a9 9 0 1 0 9-9" />
+                  <path d="M3 4v5h5" />
+                </svg>
+              </div>
+              <h3 data-i18n="features.f3.title">Summary always in USD</h3>
+              <p data-i18n="features.f3.body">
+                Today, this month and total are normalized to USD using a
+                historical rate for the day of each transaction, so 4,800 RD$
+                never looks like 4,800 USD.
+              </p>
+            </article>
+
+            <article class="feature reveal">
+              <div class="feature-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 2v6" />
+                  <path d="m9 5 3-3 3 3" />
+                  <path d="M12 22v-6" />
+                  <path d="m15 19-3 3-3-3" />
+                  <path d="M5 12H2" />
+                  <path d="M22 12h-3" />
+                </svg>
+              </div>
+              <h3 data-i18n="features.f4.title">Per-expense USD rate</h3>
+              <p data-i18n="features.f4.body">
+                Each expense stores its own conversion rate. Edit it manually or
+                tap "Fetch historical USD rate" to pull the value for that exact
+                date.
+              </p>
+            </article>
+
+            <article class="feature reveal delay-1">
+              <div class="feature-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"
+                  />
+                  <path d="M11 18h2" />
+                </svg>
+              </div>
+              <h3 data-i18n="features.f5.title">iOS native, Material 3 UI</h3>
+              <p data-i18n="features.f5.body">
+                Built with Flutter and Material 3, with custom app icon,
+                launcher branding and a teal gradient identity matching the
+                Spendly mark.
+              </p>
+            </article>
+
+            <article class="feature reveal delay-2">
+              <div class="feature-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5" />
+                  <path d="M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6" />
+                </svg>
+              </div>
+              <h3 data-i18n="features.f6.title">Local-first storage</h3>
+              <p data-i18n="features.f6.body">
+                All data lives on the device using Drift over SQLite. No
+                backend, no analytics, no tracking.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section id="how" class="how">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="eyebrow" data-i18n="how.eyebrow">How it works</span>
+            <h2 class="section-title" data-i18n="how.title">
+              From bank email to USD-normalized expense.
+            </h2>
+            <p class="section-lead" data-i18n="how.lead">
+              Three small steps that happen automatically every time you sync.
+            </p>
+          </div>
+
+          <div class="how-grid">
+            <div class="step reveal">
+              <div class="step-num">1</div>
+              <div>
+                <h3 data-i18n="how.s1.title">Connect Gmail</h3>
+                <p data-i18n="how.s1.body">
+                  Sign in once with read-only access. Spendly remembers your
+                  session and only re-prompts if it expires.
+                </p>
+              </div>
+            </div>
+            <div class="step reveal delay-1">
+              <div class="step-num">2</div>
+              <div>
+                <h3 data-i18n="how.s2.title">Parse bank notifications</h3>
+                <p data-i18n="how.s2.body">
+                  A small parser extracts merchant, amount, currency and date
+                  from each bank email and dedupes by message id.
+                </p>
+              </div>
+            </div>
+            <div class="step reveal delay-2">
+              <div class="step-num">3</div>
+              <div>
+                <h3 data-i18n="how.s3.title">Convert to USD by date</h3>
+                <p data-i18n="how.s3.body">
+                  The historical USD rate is fetched per expense, so a charge
+                  from last year uses last year's rate — not today's.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREENSHOTS -->
+      <section id="shots" class="shots">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="eyebrow" data-i18n="shots.eyebrow">Screenshots</span>
+            <h2 class="section-title" data-i18n="shots.title">
+              A clean iOS experience.
+            </h2>
+            <p class="section-lead" data-i18n="shots.lead">
+              Light theme, Inter typography, teal gradient hero, and a
+              transactions list designed to be scanned in one glance.
+            </p>
+          </div>
+
+          <div class="shots-grid">
+            <div class="shot-card reveal">
+              <div class="phone">
+                <div class="phone-screen">
+                  <img
+                    src="assets/screenshots/home.png"
+                    alt="Home screen"
+                    loading="lazy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='grid'"
+                  />
+                  <div class="placeholder" style="display:none">
+                    <span data-i18n="shots.placeholder">Add screenshot</span>
+                  </div>
+                </div>
+              </div>
+              <span class="shot-caption" data-i18n="shots.cap1"
+                >Home · USD summary</span
+              >
+            </div>
+
+            <div class="shot-card reveal delay-1">
+              <div class="phone">
+                <div class="phone-screen">
+                  <img
+                    src="assets/screenshots/expense-form.png"
+                    alt="Expense form"
+                    loading="lazy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='grid'"
+                  />
+                  <div class="placeholder" style="display:none">
+                    <span data-i18n="shots.placeholder">Add screenshot</span>
+                  </div>
+                </div>
+              </div>
+              <span class="shot-caption" data-i18n="shots.cap2"
+                >Expense form · USD rate</span
+              >
+            </div>
+
+            <div class="shot-card reveal delay-2">
+              <div class="phone">
+                <div class="phone-screen">
+                  <img
+                    src="assets/screenshots/email-import.png"
+                    alt="Bank email import"
+                    loading="lazy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='grid'"
+                  />
+                  <div class="placeholder" style="display:none">
+                    <span data-i18n="shots.placeholder">Add screenshot</span>
+                  </div>
+                </div>
+              </div>
+              <span class="shot-caption" data-i18n="shots.cap3"
+                >Bank email import</span
+              >
+            </div>
+
+            <div class="shot-card reveal delay-3">
+              <div class="phone">
+                <div class="phone-screen">
+                  <img
+                    src="assets/screenshots/edit.png"
+                    alt="Edit expense"
+                    loading="lazy"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='grid'"
+                  />
+                  <div class="placeholder" style="display:none">
+                    <span data-i18n="shots.placeholder">Add screenshot</span>
+                  </div>
+                </div>
+              </div>
+              <span class="shot-caption" data-i18n="shots.cap4"
+                >Edit · Fetch historical rate</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TECH -->
+      <section id="tech" class="tech">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="eyebrow" data-i18n="tech.eyebrow">Tech stack</span>
+            <h2 class="section-title" data-i18n="tech.title">
+              Built with tools I trust.
+            </h2>
+            <p class="section-lead" data-i18n="tech.lead">
+              A focused stack — no bloat, no dead code paths, and every choice
+              made to ship faster and stay maintainable.
+            </p>
+          </div>
+
+          <div class="chips reveal">
+            <span class="chip">Flutter</span>
+            <span class="chip">Dart</span>
+            <span class="chip">Riverpod</span>
+            <span class="chip">Drift / SQLite</span>
+            <span class="chip">Material 3</span>
+            <span class="chip">go_router</span>
+            <span class="chip">Google Sign-In</span>
+            <span class="chip">Gmail API</span>
+            <span class="chip">Currency API</span>
+            <span class="chip">flutter_svg</span>
+            <span class="chip">flutter_launcher_icons</span>
+            <span class="chip">CocoaPods</span>
+            <span class="chip">Xcode</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="about">
+        <div class="container">
+          <div class="about-card reveal">
+            <h2 data-i18n="about.title">A personal tool I actually use.</h2>
+            <p data-i18n="about.body">
+              Spendly started as a quick scratch project because no existing
+              expense app handled multi-currency, RD$, and historical USD rates
+              the way I wanted. It is now a clean, opinionated iOS app I open
+              every day — and a small portfolio piece of how I think about
+              shipping focused products.
+            </p>
+            <a
+              class="btn"
+              href="https://github.com/CarlosMarteRamirez/spendly"
+              target="_blank"
+              rel="noopener"
+            >
+              <span data-i18n="about.cta">Read the source on GitHub</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="brand">
+          <img src="assets/app-icon.png" alt="" />
+          <span>Spendly</span>
+        </div>
+        <div class="footer-links">
+          <a
+            href="https://github.com/CarlosMarteRamirez/spendly"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+          <a href="#features" data-i18n="nav.features">Features</a>
+          <a href="#tech" data-i18n="nav.tech">Tech</a>
+        </div>
+        <div data-i18n="footer.note">
+          Made by Carlos Marte · Built with Flutter
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
