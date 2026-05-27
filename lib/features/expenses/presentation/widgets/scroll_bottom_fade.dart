@@ -1,65 +1,60 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
-/// Thin Mail-style fade sitting right above a fixed bottom bar (or screen edge).
-const kScrollFadeBandHeight = 24.0;
+/// Height of the frosted-glass band at the bottom edge.
+const kScrollFadeBandHeight = 56.0;
 
-/// Soft fade anchored to the bottom of a scrollable area.
-class ScrollBottomFade extends StatelessWidget {
-  const ScrollBottomFade({
-    super.key,
-    this.height = kScrollFadeBandHeight,
-    this.color,
-  });
-
-  final double height;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    final bg = color ?? Theme.of(context).scaffoldBackgroundColor;
-
-    return IgnorePointer(
-      child: SizedBox(
-        height: height,
-        width: double.infinity,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [bg.withValues(alpha: 0), bg],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Stacks a child scrollable with a fade pinned to its bottom edge.
+/// Wraps a scrollable so its bottom edge fades to transparent (Mail-style).
+///
+/// Instead of overlaying a colored fade (which washes out colored content like
+/// red/green buttons), it stacks a [BackdropFilter] with a real Gaussian blur
+/// over the scrollable's bottom edge, then masks it with a vertical gradient
+/// so the blur ramps in gradually toward the screen edge.
 class ScrollWithBottomFade extends StatelessWidget {
   const ScrollWithBottomFade({
     required this.child,
     super.key,
     this.fadeHeight = kScrollFadeBandHeight,
-    this.color,
+    this.blurSigma = 14,
   });
 
   final Widget child;
   final double fadeHeight;
-  final Color? color;
+  final double blurSigma;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
-      fit: StackFit.expand,
       children: [
         child,
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
-          child: ScrollBottomFade(height: fadeHeight, color: color),
+          height: fadeHeight,
+          child: IgnorePointer(
+            child: ClipRect(
+              child: ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0.0, 0.4, 1.0],
+                    colors: [Colors.transparent, Colors.black54, Colors.black],
+                  ).createShader(bounds);
+                },
+                blendMode: BlendMode.dstIn,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: blurSigma,
+                    sigmaY: blurSigma,
+                  ),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -68,6 +63,3 @@ class ScrollWithBottomFade extends StatelessWidget {
 
 /// Bottom inset for the home list so the last row clears the FAB.
 const kScrollBottomInsetWithFab = 96.0;
-
-/// Bottom inset added inside a form scroll so content clears the action bar.
-const kFormActionBarReservedSpace = 16.0;
