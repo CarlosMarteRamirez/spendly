@@ -19,6 +19,12 @@ class GmailService {
 
   Future<void> signIn() async {
     await _signIn.signIn();
+    final granted = await _signIn.requestScopes(
+      const [gmail.GmailApi.gmailReadonlyScope],
+    );
+    if (!granted) {
+      throw StateError('Gmail permission was not granted.');
+    }
   }
 
   Future<void> signOut() async {
@@ -33,6 +39,12 @@ class GmailService {
     final account = _signIn.currentUser ?? await _signIn.signInSilently();
     if (account == null) {
       throw StateError('Sign in to Gmail first.');
+    }
+    final granted = await _signIn.requestScopes(
+      const [gmail.GmailApi.gmailReadonlyScope],
+    );
+    if (!granted) {
+      throw StateError('Missing Gmail read permission (gmail.readonly).');
     }
 
     final client = await _signIn.authenticatedClient();
