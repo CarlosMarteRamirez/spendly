@@ -6,6 +6,7 @@ import 'package:app_for_finance/core/utils/formatters.dart';
 import 'package:app_for_finance/features/expenses/application/expenses_controller.dart';
 import 'package:app_for_finance/features/expenses/domain/expense.dart';
 import 'package:app_for_finance/features/expenses/domain/expense_repository.dart';
+import 'package:app_for_finance/features/expenses/presentation/widgets/scroll_bottom_fade.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,12 +75,19 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
           color: AppColors.textPrimary,
         ),
       ),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            children: [
+      body: ScrollWithBottomFade(
+        child: SafeArea(
+          bottom: false,
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+              ),
+              children: [
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.lg),
@@ -311,7 +319,8 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                   ),
                 ),
               ],
-            ],
+              ],
+            ),
           ),
         ),
       ),

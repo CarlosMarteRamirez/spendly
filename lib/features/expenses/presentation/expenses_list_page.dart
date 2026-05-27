@@ -7,6 +7,7 @@ import 'package:app_for_finance/features/expenses/presentation/widgets/empty_exp
 import 'package:app_for_finance/features/expenses/presentation/widgets/expense_tile.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/filter_section.dart';
 import 'package:app_for_finance/features/email_import/presentation/email_import_page.dart';
+import 'package:app_for_finance/features/expenses/presentation/widgets/scroll_bottom_fade.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/summary_hero.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,22 +40,24 @@ class ExpensesListPage extends ConsumerWidget {
         icon: const Icon(Icons.add_rounded),
         label: const Text('New'),
       ),
-      body: SafeArea(
-        child: filtered.when(
-          data: (expenses) {
-            if (expenses.isEmpty) {
-              return ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  SummaryHero(summary: summary),
-                  FilterSection(filters: filters),
-                  const EmptyExpenses(),
-                  const SizedBox(height: 88),
-                ],
-              );
-            }
-            return CustomScrollView(
-              slivers: [
+      body: ScrollWithBottomFade(
+        child: SafeArea(
+          bottom: false,
+          child: filtered.when(
+              data: (expenses) {
+                if (expenses.isEmpty) {
+                  return ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      SummaryHero(summary: summary),
+                      FilterSection(filters: filters),
+                      const EmptyExpenses(),
+                      const SizedBox(height: kScrollBottomInsetWithFab),
+                    ],
+                  );
+                }
+                return CustomScrollView(
+                  slivers: [
                 SliverToBoxAdapter(child: SummaryHero(summary: summary)),
                 SliverToBoxAdapter(child: FilterSection(filters: filters)),
                 SliverToBoxAdapter(
@@ -79,7 +82,7 @@ class ExpensesListPage extends ConsumerWidget {
                     AppSpacing.lg,
                     0,
                     AppSpacing.lg,
-                    88,
+                    kScrollBottomInsetWithFab,
                   ),
                   sliver: SliverList.builder(
                     itemCount: expenses.length,
@@ -120,11 +123,12 @@ class ExpensesListPage extends ConsumerWidget {
                     },
                   ),
                 ),
-              ],
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, _) => Center(child: Text('Error: $err')),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) => Center(child: Text('Error: $err')),
+            ),
         ),
       ),
     );
