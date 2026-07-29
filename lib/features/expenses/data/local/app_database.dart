@@ -58,6 +58,7 @@ class AppDatabase extends _$AppDatabase {
   static const emailImportSettingsRowId = 1;
 
   static const defaultBankSenderFilters = [
+    // Dominican Republic banks
     'qik.do',
     'notificaciones@qik.do',
     'bhd.com.do',
@@ -66,6 +67,19 @@ class AppDatabase extends _$AppDatabase {
     'scotiabank.com',
     'apap.com.do',
     'promerica.com.do',
+    'bsc.com.do',
+    // US banks
+    'ealerts.bankofamerica.com',
+    'onlinebanking@ealerts.bankofamerica.com',
+    'chase.com',
+    'alertsp.chase.com',
+    'info3.citibank.com',
+    'citicards@info3.citibank.com',
+    'citi.com',
+    'alerts@usbank.com',
+    'notifications.usbank.com',
+    'notification.capitalone.com',
+    'capitalone.com',
   ];
 
   @override

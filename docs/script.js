@@ -34,7 +34,7 @@
         "Log a charge with title, amount, date and notes. Supports USD, EUR, MXN and DOP (RD$) out of the box.",
       "features.f2.title": "Automatic Gmail import",
       "features.f2.body":
-        "Connects to Gmail with read-only scope and parses notifications from Qik, BHD, Popular, Banreservas, Scotiabank, APAP and Promerica. Deduplicates by Gmail message id.",
+        "Connects to Gmail with read-only scope and parses notifications from Dominican banks (Qik, BHD, Popular, Banreservas, Scotiabank, APAP, Promerica, Santa Cruz) and US banks (Bank of America, Chase, Citibank, U.S. Bank, Capital One). Deduplicates by Gmail message id.",
       "features.f3.title": "Summary always in USD",
       "features.f3.body":
         "Today, this month and total are normalized to USD using a historical rate for the day of each transaction, so 4,800 RD$ never looks like 4,800 USD.",
@@ -112,7 +112,7 @@
         "Registra un gasto con título, monto, fecha y notas. Soporta USD, EUR, MXN y DOP (RD$).",
       "features.f2.title": "Importación automática desde Gmail",
       "features.f2.body":
-        "Se conecta a Gmail solo en modo lectura y parsea notificaciones de Qik, BHD, Popular, Banreservas, Scotiabank, APAP y Promerica. Evita duplicados por message id.",
+        "Se conecta a Gmail solo en modo lectura y parsea notificaciones de bancos dominicanos (Qik, BHD, Popular, Banreservas, Scotiabank, APAP, Promerica, Santa Cruz) y bancos de EE.UU. (Bank of America, Chase, Citibank, U.S. Bank, Capital One). Evita duplicados por message id.",
       "features.f3.title": "Resumen siempre en USD",
       "features.f3.body":
         "Hoy, este mes y total se normalizan a USD con tasa histórica del día de cada transacción, así 4,800 RD$ no se ven como 4,800 USD.",
