@@ -109,13 +109,8 @@ class _StatPill extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: onTap != null
-            ? Colors.white.withValues(alpha: 0.28)
-            : Colors.white.withValues(alpha: 0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-        border: onTap != null
-            ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
-            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
