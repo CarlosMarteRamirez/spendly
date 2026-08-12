@@ -1,5 +1,6 @@
 import 'package:app_for_finance/app/app.dart';
 import 'package:app_for_finance/features/expenses/application/expenses_controller.dart';
+import 'package:app_for_finance/features/expenses/domain/expense.dart';
 import 'package:app_for_finance/features/expenses/presentation/expense_form_page.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/filter_section.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,25 @@ void main() {
   testWidgets('app smoke test renders expenses screen', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const ProviderScope(child: ExpensesApp()));
+    final now = DateTime.now();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          expensesProvider.overrideWith((ref) => Stream.value([
+            Expense(
+              id: 1,
+              title: 'Sample Expense',
+              amount: 25.0,
+              currencyCode: 'USD',
+              spentAt: now,
+              createdAt: now,
+              updatedAt: now,
+            ),
+          ])),
+        ],
+        child: const ExpensesApp(),
+      ),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 

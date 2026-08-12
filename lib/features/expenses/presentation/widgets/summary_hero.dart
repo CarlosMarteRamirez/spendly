@@ -6,9 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SummaryHero extends StatelessWidget {
-  const SummaryHero({required this.summary, super.key});
+  const SummaryHero({
+    required this.summary,
+    this.onTotalTap,
+    super.key,
+  });
 
   final AsyncValue<ExpenseSummary> summary;
+  final VoidCallback? onTotalTap;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +71,8 @@ class SummaryHero extends StatelessWidget {
                       _StatPill(
                         label: 'Total',
                         value: formatMoney(data.grandTotal, 'USD'),
+                        onTap: onTotalTap,
+                        showChevron: true,
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       _StatPill(label: 'Items', value: '${data.itemCount}'),
@@ -82,48 +89,87 @@ class SummaryHero extends StatelessWidget {
 }
 
 class _StatPill extends StatelessWidget {
-  const _StatPill({required this.label, required this.value});
+  const _StatPill({
+    required this.label,
+    required this.value,
+    this.onTap,
+    this.showChevron = false,
+  });
 
   final String label;
   final String value;
+  final VoidCallback? onTap;
+  final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+    final content = Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: onTap != null
+            ? Colors.white.withValues(alpha: 0.28)
+            : Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: onTap != null
+            ? Border.all(color: Colors.white.withValues(alpha: 0.4), width: 1)
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
+              if (showChevron)
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white70,
+                  size: 10,
+                ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
-            const SizedBox(height: 2),
-            Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+
+    if (onTap != null) {
+      return Expanded(
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            splashColor: Colors.white.withValues(alpha: 0.3),
+            highlightColor: Colors.white.withValues(alpha: 0.1),
+            child: content,
+          ),
+        ),
+      );
+    }
+
+    return Expanded(child: content);
   }
 }

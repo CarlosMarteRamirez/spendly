@@ -3,6 +3,7 @@ import 'package:app_for_finance/features/expenses/data/expense_repository_local.
 import 'package:app_for_finance/features/expenses/data/local/app_database.dart';
 import 'package:app_for_finance/features/expenses/domain/expense.dart';
 import 'package:app_for_finance/features/expenses/domain/expense_repository.dart';
+import 'package:app_for_finance/features/expenses/domain/total_breakdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const availableCurrencies = ['USD', 'EUR', 'MXN', 'DOP'];
@@ -61,6 +62,11 @@ final filteredExpensesProvider = Provider<AsyncValue<List<Expense>>>((ref) {
 final summaryProvider = Provider<AsyncValue<ExpenseSummary>>((ref) {
   final expenses = ref.watch(filteredExpensesProvider);
   return expenses.whenData((list) => ExpenseSummary.fromList(list));
+});
+
+final totalBreakdownProvider = Provider<AsyncValue<TotalBreakdownSummary>>((ref) {
+  final expenses = ref.watch(expensesProvider);
+  return expenses.whenData((list) => TotalBreakdownSummary.fromExpenses(list));
 });
 
 class ExpenseFilters {

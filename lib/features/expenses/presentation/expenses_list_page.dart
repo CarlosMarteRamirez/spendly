@@ -9,6 +9,7 @@ import 'package:app_for_finance/features/expenses/presentation/widgets/filter_se
 import 'package:app_for_finance/features/email_import/presentation/email_import_page.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/scroll_bottom_fade.dart';
 import 'package:app_for_finance/features/expenses/presentation/widgets/summary_hero.dart';
+import 'package:app_for_finance/features/expenses/presentation/total_breakdown_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -49,7 +50,10 @@ class ExpensesListPage extends ConsumerWidget {
                   return ListView(
                     padding: EdgeInsets.zero,
                     children: [
-                      SummaryHero(summary: summary),
+                      SummaryHero(
+                        summary: summary,
+                        onTotalTap: () => _navigateToTotalBreakdown(context),
+                      ),
                       FilterSection(filters: filters),
                       const EmptyExpenses(),
                       const SizedBox(height: kScrollBottomInsetWithFab),
@@ -58,7 +62,12 @@ class ExpensesListPage extends ConsumerWidget {
                 }
                 return CustomScrollView(
                   slivers: [
-                SliverToBoxAdapter(child: SummaryHero(summary: summary)),
+                SliverToBoxAdapter(
+                  child: SummaryHero(
+                    summary: summary,
+                    onTotalTap: () => _navigateToTotalBreakdown(context),
+                  ),
+                ),
                 SliverToBoxAdapter(child: FilterSection(filters: filters)),
                 SliverToBoxAdapter(
                   child: Padding(
@@ -137,6 +146,31 @@ class ExpensesListPage extends ConsumerWidget {
   Future<void> _openForm(BuildContext context, {Expense? expense}) {
     return Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => ExpenseFormPage(expense: expense)),
+    );
+  }
+
+  void _navigateToTotalBreakdown(BuildContext context) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const TotalBreakdownPage(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOutCubic;
+
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 350),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
+      ),
     );
   }
 
