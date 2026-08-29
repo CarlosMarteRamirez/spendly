@@ -73,6 +73,10 @@ class AppDatabase extends _$AppDatabase {
     'onlinebanking@ealerts.bankofamerica.com',
     'chase.com',
     'alertsp.chase.com',
+    'no.reply.alerts@chase.com',
+    'no.reply@chase.com',
+    'alerts@chase.com',
+    'account.alerts@chase.com',
     'info3.citibank.com',
     'citicards@info3.citibank.com',
     'citi.com',
@@ -83,7 +87,7 @@ class AppDatabase extends _$AppDatabase {
   ];
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -107,6 +111,29 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           "UPDATE expenses_table SET usd_conversion_rate = 1.0 WHERE currency_code = 'USD'",
         );
+      }
+      if (from < 5) {
+        final existingSettings = await (select(emailImportSettingsTable)
+              ..where((t) => t.id.equals(emailImportSettingsRowId)))
+            .getSingleOrNull();
+        if (existingSettings != null) {
+          final decoded = (jsonDecode(existingSettings.bankSendersJson) as List?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+              [];
+          for (final defaultSender in defaultBankSenderFilters) {
+            if (!decoded.contains(defaultSender)) {
+              decoded.add(defaultSender);
+            }
+          }
+          await (update(emailImportSettingsTable)
+                ..where((t) => t.id.equals(emailImportSettingsRowId)))
+              .write(
+            EmailImportSettingsTableCompanion(
+              bankSendersJson: Value(jsonEncode(decoded)),
+            ),
+          );
+        }
       }
     },
     beforeOpen: (details) async {

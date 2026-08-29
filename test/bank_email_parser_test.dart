@@ -61,4 +61,49 @@ void main() {
     expect(result.spentAt.year, 2026);
     expect(result.spentAt.hour, 20);
   });
+
+  test('parses Chase card transaction email (USD, merchant, amount, date)', () {
+    const body = '''
+    Chase Freedom Unlimited ending in 4321
+    A charge of \$89.90 at AMAZON.COM was authorized on Aug 28, 2026.
+    Merchant: AMAZON.COM
+    Amount: \$89.90
+    Date: Aug 28, 2026
+    ''';
+
+    final result = parser.parse(
+      body: body,
+      subject: 'Your \$89.90 transaction with AMAZON.COM',
+    );
+
+    expect(result, isNotNull);
+    expect(result!.amount, 89.90);
+    expect(result.currencyCode, 'USD');
+    expect(result.title, 'AMAZON.COM');
+    expect(result.spentAt.month, 8);
+    expect(result.spentAt.day, 28);
+    expect(result.spentAt.year, 2026);
+  });
+
+  test('parses Chase e-bill / statement (factura) email', () {
+    const body = '''
+    Your Chase Credit Card statement is now ready to view online.
+    Statement balance: \$1,245.80
+    Minimum payment due: \$35.00
+    Payment due date: Sep 15, 2026
+    ''';
+
+    final result = parser.parse(
+      body: body,
+      subject: 'Your Chase credit card statement is ready',
+    );
+
+    expect(result, isNotNull);
+    expect(result!.amount, 1245.80);
+    expect(result.currencyCode, 'USD');
+    expect(result.title, contains('Chase'));
+    expect(result.spentAt.month, 9);
+    expect(result.spentAt.day, 15);
+    expect(result.spentAt.year, 2026);
+  });
 }

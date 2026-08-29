@@ -91,10 +91,10 @@ class BankEmailParser {
       }
     }
 
-    // ── US banks: labeled amount fields ──────────────────────────────────
-    // "Amount: $123.45", "Amount $123.45", "Total: $50.00"
+    // ── US banks & Statements: labeled amount fields ─────────────────────
+    // "Amount: $123.45", "Total: $50.00", "Amount due: $100.00", "Statement balance: $500.00", etc.
     final labeledUsd = RegExp(
-      r'(?:amount|total|charge|transaction amount)[:\s]*\$\s*([\d,]+(?:\.\d{2})?)',
+      r'(?:amount|total|charge|transaction amount|amount due|total due|payment due|statement balance|new balance|monto a pagar|balance al corte|saldo a pagar|pago m[ií]nimo)[:\s]*\$\s*([\d,]+(?:\.\d{2})?)',
       caseSensitive: false,
     ).firstMatch(text);
     if (labeledUsd != null) {
@@ -104,9 +104,9 @@ class BankEmailParser {
       }
     }
 
-    // Chase / BofA: "A charge/transaction of $123.45"
+    // Chase / BofA / US banks: "A charge/transaction of $123.45" or "statement balance of $123.45"
     final chargeOf = RegExp(
-      r'(?:charge|transaction|purchase|payment)\s+of\s+\$\s*([\d,]+(?:\.\d{2})?)',
+      r'(?:charge|transaction|purchase|payment|statement balance|amount due|total due)\s+(?:of|is)?\s+\$\s*([\d,]+(?:\.\d{2})?)',
       caseSensitive: false,
     ).firstMatch(text);
     if (chargeOf != null) {
@@ -116,9 +116,9 @@ class BankEmailParser {
       }
     }
 
-    // Capital One: "A $123.45 transaction" or "$123.45 charge"
+    // Capital One / Chase: "A $123.45 transaction" or "$123.45 charge" or "$123.45 statement"
     final dollarBefore = RegExp(
-      r'\$\s*([\d,]+(?:\.\d{2})?)\s+(?:transaction|charge|purchase|payment|debit)',
+      r'\$\s*([\d,]+(?:\.\d{2})?)\s+(?:transaction|charge|purchase|payment|debit|statement|bill|invoice)',
       caseSensitive: false,
     ).firstMatch(text);
     if (dollarBefore != null) {
@@ -128,7 +128,7 @@ class BankEmailParser {
       }
     }
 
-    // ── Generic patterns (DR banks) ─────────────────────────────────────
+    // ── Generic patterns (DR / US banks) ─────────────────────────────────
     final patterns = [
       RegExp(r'RD\$\s*([\d,]+(?:\.\d{2})?)', caseSensitive: false),
       RegExp(
@@ -147,11 +147,14 @@ class BankEmailParser {
       for (final match in pattern.allMatches(text)) {
         final value = _parseNumber(match.group(1)!);
         if (value == null || value <= 0) continue;
-        // Skip balance lines when using generic scan.
+        // Skip balance lines when using generic scan, unless it's statement balance / amount due
         final start = match.start;
         final windowStart = start > 40 ? start - 40 : 0;
         final window = text.substring(windowStart, start).toLowerCase();
-        if (window.contains('balance') || window.contains('available') || window.contains('credit limit')) {
+        if ((window.contains('balance') || window.contains('available') || window.contains('credit limit')) &&
+            !window.contains('statement balance') &&
+            !window.contains('amount due') &&
+            !window.contains('total due')) {
           continue;
         }
         return value;
@@ -187,9 +190,9 @@ class BankEmailParser {
         r'(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)',
         caseSensitive: false,
       ),
-      // US: "on July 25, 2026" or "on Jul 25, 2026"
+      // US: "on July 25, 2026" or "Jul 25, 2026" or "August 28, 2026"
       RegExp(
-        r'(?:on|date[:\s]*)\s*(\w+)\s+(\d{1,2}),?\s+(\d{4})',
+        r'(?:on|date[:\s]*)?\s*\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})',
         caseSensitive: false,
       ),
       RegExp(
@@ -293,9 +296,21 @@ class BankEmailParser {
       }
     }
 
+    // US banks: "with MERCHANT_NAME" (e.g. "Your $50.00 transaction with AMAZON.COM")
+    final withMerchant = RegExp(
+      r'(?:transaction|charge|purchase|payment)\s+with\s+([A-Za-z0-9*.\-][^\n]{1,60}?)(?=\s+(?:on|was|is)\b|\.(?:\s+|\n|$)|[\n\r]|$)',
+      caseSensitive: false,
+    ).firstMatch(text);
+    if (withMerchant != null) {
+      final cleaned = _cleanLabel(withMerchant.group(1)!);
+      if (cleaned.length >= 3 && !_isWeakMerchant(cleaned)) {
+        return cleaned;
+      }
+    }
+
     // US banks: "at MERCHANT_NAME on …" or "at MERCHANT_NAME."
     final atMerchant = RegExp(
-      r'(?:made\s+)?at\s+([A-Za-z0-9][^\n]{2,60}?)(?:\s+on\s+|\s+was\s+|\s*\.)',
+      r'(?:made\s+)?at\s+([A-Za-z0-9*.\-][^\n]{1,60}?)(?=\s+(?:on|was|is)\b|\.(?:\s+|\n|$)|[\n\r]|$)',
       caseSensitive: false,
     ).firstMatch(text);
     if (atMerchant != null) {
@@ -336,6 +351,12 @@ class BankEmailParser {
           return cleaned;
         }
       }
+    }
+
+    // Chase Statement / e-Bill detection
+    if (RegExp(r'\bchase\b', caseSensitive: false).hasMatch(text) &&
+        RegExp(r'\b(?:statement|e-?bill|factura|corte)\b', caseSensitive: false).hasMatch(text)) {
+      return 'Chase Bank';
     }
 
     if (subject != null) {
@@ -412,7 +433,8 @@ class BankEmailParser {
   }
 
   String _cleanLabel(String raw) {
-    return raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final trimmed = raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+    return trimmed.replaceAll(RegExp(r'\.+$'), '').trim();
   }
 
   double? _parseNumber(String raw) {

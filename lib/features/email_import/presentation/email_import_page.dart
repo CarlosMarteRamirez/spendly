@@ -2,6 +2,7 @@ import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/features/email_import/application/email_import_controller.dart';
 import 'package:app_for_finance/features/email_import/data/email_import_settings_store.dart';
+import 'package:app_for_finance/features/expenses/data/local/app_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -161,7 +162,7 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
                 context,
               ).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
               decoration: InputDecoration(
-                hintText: 'notificaciones@qik.do',
+                hintText: 'notificaciones@qik.do\nno.reply.alerts@chase.com',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 13,
                   vertical: 8,
@@ -180,14 +181,31 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            OutlinedButton(
-              onPressed: _busy ? null : _saveSenders,
-              child: const Text('Save senders'),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _busy ? null : _saveSenders,
+                    child: const Text('Save senders'),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                TextButton(
+                  onPressed: _busy ? null : _resetDefaults,
+                  child: const Text('Reset defaults'),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _resetDefaults() {
+    setState(() {
+      _sendersController.text = AppDatabase.defaultBankSenderFilters.join('\n');
+    });
   }
 
   Future<void> _setBusy(bool value) async {

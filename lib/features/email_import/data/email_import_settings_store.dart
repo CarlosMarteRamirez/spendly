@@ -90,7 +90,13 @@ class EmailImportSettingsStore {
     try {
       final decoded = jsonDecode(json);
       if (decoded is List) {
-        return decoded.map((e) => e.toString()).toList(growable: false);
+        final current = decoded.map((e) => e.toString()).toList();
+        for (final defaultSender in AppDatabase.defaultBankSenderFilters) {
+          if (!current.contains(defaultSender)) {
+            current.add(defaultSender);
+          }
+        }
+        return current;
       }
     } catch (_) {}
     return List<String>.from(AppDatabase.defaultBankSenderFilters);
