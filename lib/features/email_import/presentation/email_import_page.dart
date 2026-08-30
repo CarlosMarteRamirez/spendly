@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/features/email_import/application/email_import_controller.dart';
@@ -29,7 +30,7 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
     final settingsAsync = ref.watch(emailImportSettingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Bank email import')),
+      appBar: AppBar(title: Text(context.l10n.bankEmailImportPageTitle)),
       body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -69,21 +70,18 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Automatic expenses',
+              context.l10n.automaticExpenses,
               style: Theme.of(
                 context,
               ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: AppSpacing.sm),
-            const Text(
-              'Spendly reads bank notification emails from Gmail and creates '
-              'expenses automatically. Titles come from the merchant in the '
-              'email, or "Bank · date" when unclear. Default currency: RD\$ (DOP).',
+            Text(
+              context.l10n.automaticExpensesDesc,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Bank emails must arrive in the Gmail account you sign in with. '
-              'To add a charge manually, use New on the home screen.',
+              context.l10n.bankEmailsInfoNote,
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
@@ -102,7 +100,7 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Gmail',
+              context.l10n.gmail,
               style: Theme.of(
                 context,
               ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
@@ -110,7 +108,7 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
             if (settings.lastSyncAt != null) ...[
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'Last sync: ${settings.lastSyncAt}',
+                context.l10n.lastSync('${settings.lastSyncAt}'),
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
@@ -120,13 +118,13 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
             FilledButton.icon(
               onPressed: _busy ? null : _syncGmail,
               icon: const Icon(Icons.mail_rounded),
-              label: Text(_busy ? 'Syncing…' : 'Sign in & sync Gmail'),
+              label: Text(_busy ? context.l10n.syncing : context.l10n.signInAndSyncGmail),
             ),
             const SizedBox(height: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: _busy ? null : _signOutGmail,
               icon: const Icon(Icons.logout_rounded),
-              label: const Text('Sign out of Gmail'),
+              label: Text(context.l10n.signOutGmail),
             ),
           ],
         ),
@@ -142,14 +140,14 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Bank senders',
+              context.l10n.bankSenders,
               style: Theme.of(
                 context,
               ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'One per line: email or domain (e.g. qik.do)',
+              context.l10n.sendersHintLine,
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
@@ -186,13 +184,13 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _busy ? null : _saveSenders,
-                    child: const Text('Save senders'),
+                    child: Text(context.l10n.saveSenders),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 TextButton(
                   onPressed: _busy ? null : _resetDefaults,
-                  child: const Text('Reset defaults'),
+                  child: Text(context.l10n.resetDefaults),
                 ),
               ],
             ),
@@ -224,12 +222,14 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
       ref.invalidate(emailImportSettingsProvider);
       setState(
         () =>
-            _status =
-                'Done: ${result.imported} imported, '
-                '${result.skipped} skipped, ${result.failed} could not parse.',
+            _status = context.l10n.syncResult(
+              imported: result.imported,
+              skipped: result.skipped,
+              failed: result.failed,
+            ),
       );
     } catch (e) {
-      setState(() => _status = 'Gmail sync failed: $e');
+      setState(() => _status = context.l10n.syncFailed('$e'));
     } finally {
       await _setBusy(false);
     }
@@ -239,7 +239,7 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
     await ref.read(gmailServiceProvider).signOut();
     await ref.read(emailImportSettingsStoreProvider).setGmailConnected(false);
     ref.invalidate(emailImportSettingsProvider);
-    setState(() => _status = 'Signed out of Gmail.');
+    setState(() => _status = context.l10n.signOutGmail);
   }
 
   Future<void> _saveSenders() async {
@@ -251,6 +251,8 @@ class _EmailImportPageState extends ConsumerState<EmailImportPage> {
             .toList();
     await ref.read(emailImportSettingsStoreProvider).saveSenders(lines);
     ref.invalidate(emailImportSettingsProvider);
-    setState(() => _status = 'Bank senders saved.');
+    if (mounted) {
+      setState(() => _status = context.l10n.sendersSaved);
+    }
   }
 }

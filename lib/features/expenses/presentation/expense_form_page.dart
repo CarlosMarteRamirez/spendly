@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/utils/currency_labels.dart';
 import 'package:app_for_finance/core/utils/expense_display.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
@@ -69,7 +70,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit expense' : 'New expense'),
+        title: Text(_isEditing ? context.l10n.editExpenseTitle : context.l10n.newExpenseTitle),
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
@@ -95,7 +96,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Details',
+                        context.l10n.details,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -104,9 +105,9 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                       TextFormField(
                         controller: _titleController,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'Title (optional)',
-                          prefixIcon: Icon(Icons.label_outline_rounded),
+                        decoration: InputDecoration(
+                          labelText: context.l10n.titleOptional,
+                          prefixIcon: const Icon(Icons.label_outline_rounded),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -126,14 +127,14 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                           fontWeight: FontWeight.w700,
                           color: AppColors.textPrimary,
                         ),
-                        decoration: const InputDecoration(
-                          labelText: 'Amount',
-                          prefixIcon: Icon(Icons.attach_money_rounded),
+                        decoration: InputDecoration(
+                          labelText: context.l10n.amount,
+                          prefixIcon: const Icon(Icons.attach_money_rounded),
                         ),
                         validator: (value) {
                           final parsed = double.tryParse(value?.trim() ?? '');
                           if (parsed == null || parsed <= 0) {
-                            return 'Enter a valid amount greater than 0.';
+                            return context.l10n.validAmountError;
                           }
                           return null;
                         },
@@ -150,7 +151,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Currency',
+                        context.l10n.currency,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -208,12 +209,12 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                         decoration: InputDecoration(
                           labelText:
                               _currencyCode == 'USD'
-                                  ? 'USD conversion rate (fixed)'
-                                  : 'USD conversion rate',
+                                  ? context.l10n.usdConversionRateFixed
+                                  : context.l10n.usdConversionRate,
                           hintText:
                               _currencyCode == 'USD'
                                   ? '1.0000'
-                                  : '1 USD = ? $_currencyCode',
+                                  : context.l10n.usdRateHint(_currencyCode),
                           prefixIcon: const Icon(
                             Icons.currency_exchange_rounded,
                           ),
@@ -222,7 +223,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                           if (_currencyCode == 'USD') return null;
                           final parsed = double.tryParse(value?.trim() ?? '');
                           if (parsed == null || parsed <= 0) {
-                            return 'Enter a valid USD conversion rate.';
+                            return context.l10n.validUsdRateError;
                           }
                           return null;
                         },
@@ -238,14 +239,14 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                           icon:
                               _loadingRate
                                   ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
+                                     width: 16,
+                                     height: 16,
+                                     child: CircularProgressIndicator(
+                                       strokeWidth: 2,
+                                     ),
+                                   )
                                   : const Icon(Icons.cloud_download_outlined),
-                          label: const Text('Fetch historical USD rate'),
+                          label: Text(context.l10n.fetchHistoricalUsdRate),
                         ),
                       ),
                     ],
@@ -270,7 +271,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                       color: AppColors.primary,
                     ),
                   ),
-                  title: const Text('Date and time'),
+                  title: Text(context.l10n.dateTimeLabel),
                   subtitle: Text(formatExpenseDate(_spentAt)),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: _pickDateTime,
@@ -283,10 +284,10 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                   child: TextFormField(
                     controller: _notesController,
                     maxLines: 2,
-                    decoration: const InputDecoration(
-                      labelText: 'Notes (optional)',
+                    decoration: InputDecoration(
+                      labelText: context.l10n.notesOptional,
                       alignLabelWithHint: true,
-                      contentPadding: EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 25,
                         vertical: 8,
                       ),
@@ -301,7 +302,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                   key: const Key('expense_form_save'),
                   onPressed: _submit,
                   icon: const Icon(Icons.save_rounded),
-                  label: Text(_isEditing ? 'Save changes' : 'Save expense'),
+                  label: Text(_isEditing ? context.l10n.saveChanges : context.l10n.saveExpense),
                 ),
               ),
               if (_isEditing) ...[
@@ -311,7 +312,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                   child: FilledButton.icon(
                     onPressed: _deleteExpense,
                     icon: const Icon(Icons.delete_rounded),
-                    label: const Text('Delete expense'),
+                    label: Text(context.l10n.deleteExpense),
                     style: FilledButton.styleFrom(
                       backgroundColor: Colors.red.shade700,
                       foregroundColor: Colors.white,
@@ -360,7 +361,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     final repository = ref.read(expenseRepositoryProvider);
     final title = _titleController.text.trim();
     final draft = ExpenseDraft(
-      title: title.isEmpty ? kUntitledExpenseLabel : title,
+      title: title.isEmpty ? context.l10n.untitledExpense : title,
       amount: double.parse(_amountController.text.trim()),
       currencyCode: _currencyCode,
       usdConversionRate: usdRate,
@@ -389,8 +390,8 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     setState(() => _loadingRate = false);
     if (rate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not fetch exchange rate right now.'),
+        SnackBar(
+          content: Text(context.l10n.fetchRateError),
         ),
       );
       return;
@@ -406,8 +407,8 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Delete expense'),
-            content: const Text('This action cannot be undone.'),
+            title: Text(context.l10n.deleteExpense),
+            content: Text(context.l10n.deleteConfirmationContent),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             ),
@@ -416,17 +417,17 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                 onPressed: () => Navigator.of(context).pop(false),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(60, 35),
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 ),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.cancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(60, 35),
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 ),
-                child: const Text('Delete'),
+                child: Text(context.l10n.delete),
               ),
             ],
           ),

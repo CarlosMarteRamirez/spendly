@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/features/expenses/application/expenses_controller.dart';
@@ -24,10 +25,10 @@ class ExpensesListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My expenses'),
+        title: Text(context.l10n.myExpenses),
         actions: [
           IconButton(
-            tooltip: 'Bank email import',
+            tooltip: context.l10n.bankEmailImport,
             icon: const Icon(Icons.mark_email_read_outlined),
             onPressed:
                 () => Navigator.of(context).push(
@@ -39,7 +40,7 @@ class ExpensesListPage extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(context),
         icon: const Icon(Icons.add_rounded),
-        label: const Text('New'),
+        label: Text(context.l10n.newExpense),
       ),
       body: ScrollWithBottomFade(
         child: SafeArea(
@@ -78,7 +79,7 @@ class ExpensesListPage extends ConsumerWidget {
                       AppSpacing.sm,
                     ),
                     child: Text(
-                      'Transactions',
+                      context.l10n.transactions,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -179,8 +180,8 @@ class ExpensesListPage extends ConsumerWidget {
       context: context,
       builder:
           (_) => AlertDialog(
-            title: const Text('Delete expense'),
-            content: const Text('This action cannot be undone.'),
+            title: Text(context.l10n.deleteExpense),
+            content: Text(context.l10n.deleteConfirmationContent),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             ),
@@ -189,17 +190,17 @@ class ExpensesListPage extends ConsumerWidget {
                 onPressed: () => Navigator.of(context).pop(false),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(60, 35),
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 ),
-                child: const Text('Cancel'),
+                child: Text(context.l10n.cancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(60, 35),
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                 ),
-                child: const Text('Delete'),
+                child: Text(context.l10n.delete),
               ),
             ],
           ),
@@ -218,7 +219,7 @@ class ExpensesListPage extends ConsumerWidget {
         ..hideCurrentSnackBar()
         ..showSnackBar(
           SnackBar(
-            content: Text('"${expense.title}" deleted'),
+            content: Text(context.l10n.expenseDeleted(expense.title)),
             duration: const Duration(seconds: 2),
           ),
         );

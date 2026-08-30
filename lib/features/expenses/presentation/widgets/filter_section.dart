@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/utils/currency_labels.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
@@ -30,12 +31,12 @@ class FilterSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(
+            decoration: InputDecoration(
+              prefixIcon: const Icon(
                 Icons.search_rounded,
                 color: AppColors.textSecondary,
               ),
-              hintText: 'Search by title',
+              hintText: context.l10n.searchByTitle,
             ),
             onChanged:
                 (value) => ref
@@ -48,7 +49,7 @@ class FilterSection extends ConsumerWidget {
             child: Row(
               children: [
                 _CurrencyChip(
-                  label: 'All',
+                  label: context.l10n.all,
                   selected: filters.currencyCode == null,
                   onTap:
                       () => ref
@@ -73,7 +74,7 @@ class FilterSection extends ConsumerWidget {
                   icon: Icons.calendar_today_rounded,
                   label:
                       filters.from == null
-                          ? 'From'
+                          ? context.l10n.fromDate
                           : formatShortDate(filters.from!),
                   selected: filters.from != null,
                   onTap: () => _pickDate(context, ref, isFrom: true),
@@ -83,7 +84,7 @@ class FilterSection extends ConsumerWidget {
                   icon: Icons.event_rounded,
                   label:
                       filters.to == null
-                          ? 'To'
+                          ? context.l10n.toDate
                           : formatShortDate(filters.to!),
                   selected: filters.to != null,
                   onTap: () => _pickDate(context, ref, isFrom: false),
@@ -92,7 +93,7 @@ class FilterSection extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.sm),
                   ActionChip(
                     avatar: const Icon(Icons.filter_alt_off, size: 18),
-                    label: const Text('Clear'),
+                    label: Text(context.l10n.clearFilters),
                     onPressed:
                         () =>
                             ref.read(filtersProvider.notifier).state =

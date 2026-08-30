@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/core/utils/formatters.dart';
@@ -38,7 +39,7 @@ class SummaryHero extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Summary',
+                    context.l10n.summary,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontWeight: FontWeight.w500,
@@ -46,7 +47,7 @@ class SummaryHero extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'This month (USD)',
+                    context.l10n.thisMonthUsd,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Colors.white.withValues(alpha: 0.75),
                     ),
@@ -64,18 +65,18 @@ class SummaryHero extends StatelessWidget {
                   Row(
                     children: [
                       _StatPill(
-                        label: 'Today',
+                        label: context.l10n.today,
                         value: formatMoney(data.todayTotal, 'USD'),
                       ),
                       const SizedBox(width: AppSpacing.sm),
                       _StatPill(
-                        label: 'Total',
+                        label: context.l10n.total,
                         value: formatMoney(data.grandTotal, 'USD'),
                         onTap: onTotalTap,
                         showChevron: true,
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      _StatPill(label: 'Items', value: '${data.itemCount}'),
+                      _StatPill(label: context.l10n.items, value: '${data.itemCount}'),
                     ],
                   ),
                 ],

@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class EmptyExpenses extends StatelessWidget {
           children: [
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'No expenses yet',
+              context.l10n.noExpensesYet,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -23,7 +24,7 @@ class EmptyExpenses extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Add your first expense with the New button',
+              context.l10n.addFirstExpenseHint,
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,

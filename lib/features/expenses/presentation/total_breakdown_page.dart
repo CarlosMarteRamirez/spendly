@@ -1,3 +1,4 @@
+import 'package:app_for_finance/core/l10n/app_localizations.dart';
 import 'package:app_for_finance/core/theme/app_colors.dart';
 import 'package:app_for_finance/core/theme/app_spacing.dart';
 import 'package:app_for_finance/core/utils/formatters.dart';
@@ -15,7 +16,7 @@ class TotalBreakdownPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Total breakdown'),
+        title: Text(context.l10n.totalBreakdown),
         centerTitle: false,
       ),
       body: breakdownAsync.when(
@@ -46,7 +47,7 @@ class TotalBreakdownPage extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
-              'Error loading breakdown: $err',
+              context.l10n.errorLoadingBreakdown('$err'),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.red.shade400,
                   ),
@@ -83,7 +84,7 @@ class _EmptyBreakdownState extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'No expenses recorded',
+              context.l10n.noExpensesRecorded,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -91,7 +92,7 @@ class _EmptyBreakdownState extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Add expenses to the database to see their breakdown by months and years.',
+              context.l10n.noExpensesRecordedSub,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
@@ -161,7 +162,7 @@ class _YearSectionCard extends StatelessWidget {
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
-                      '${yearBreakdown.itemCount} ${yearBreakdown.itemCount == 1 ? 'transaction' : 'transactions'}',
+                      context.l10n.transactionCount(yearBreakdown.itemCount),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w500,
@@ -180,7 +181,7 @@ class _YearSectionCard extends StatelessWidget {
                           ),
                     ),
                     Text(
-                      '$pctText% of total',
+                      context.l10n.pctOfTotal(pctText),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
@@ -264,7 +265,7 @@ class _MonthTileState extends State<_MonthTile> {
                     Row(
                       children: [
                         Text(
-                          month.monthName,
+                          context.l10n.monthName(month.month),
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
@@ -292,7 +293,7 @@ class _MonthTileState extends State<_MonthTile> {
                                   ),
                             ),
                             Text(
-                              '$pctYearText% of year',
+                              context.l10n.pctOfYear(pctYearText),
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: AppColors.textSecondary,
                                   ),
